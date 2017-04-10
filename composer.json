@@ -1,0 +1,16 @@
+{
+  "name": "multinetinteractive/eduadmin-wordpress-sveawebpay",
+  "type": "wordpress-plugin",
+  "description": "EduAdmin - WordPress-plugin",
+  "homepage": "http://www.multinet.se/",
+  "support": {
+    "issues": "https://github.com/multinetinteractive/eduadmin-wordpress-sveawebpay/issues"
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "require": {
+	"php": ">=5.0.1",
+    "composer/installers": "~1.0.12",
+	"sveaekonomi/webpay": "dev-master"
+  }
+}
