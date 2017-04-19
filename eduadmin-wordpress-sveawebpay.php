@@ -35,44 +35,45 @@ defined( 'ABSPATH' ) or die( 'This plugin must be run within the scope of WordPr
     along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
- add_action('admin_init', 'checkForEduAdminPlugin');
- function checkForEduAdminPlugin() {
-	 if(is_admin() && current_user_can('activate_plugins') && !is_plugin_active('eduadmin/eduadmin.php'))
-	 {
-		 add_action('admin_notices', function() {
-			 ?><div class="error"><p><?php _e('This plugin requires the EduAdmin-WordPress-plugin to be installed and activated.', 'eduadmin-sveawebpay'); ?></p></div><?php
-		 });
-		 deactivate_plugins(plugin_basename( __FILE__ ));
+add_action( 'admin_init', 'checkForEduAdminPlugin' );
+function checkForEduAdminPlugin() {
+	if ( is_admin() && current_user_can( 'activate_plugins' ) && ! is_plugin_active( 'eduadmin/eduadmin.php' ) ) {
+		add_action( 'admin_notices', function() {
+			?>
+			<div class="error">
+			<p><?php _e( 'This plugin requires the EduAdmin-WordPress-plugin to be installed and activated.', 'eduadmin-sveawebpay' ); ?></p>
+			</div><?php
+		} );
+		deactivate_plugins( plugin_basename( __FILE__ ) );
 
-		 if(isset($_GET['activate'])) {
-			 unset($_GET['activate']);
-		 }
-	 }
- }
-
-if(!class_exists('EDU_SveaWebPay_Loader')):
-
-final class EDU_SveaWebPay_Loader {
-	public function __construct() {
-		add_action('plugins_loaded', array($this, 'init'));
-	}
-
-	public function init() {
-		if(class_exists('EDU_Integration'))
-		{
-			require_once(__DIR__ . '/vendor/autoload.php'); // Load dependencies
-			require_once(__DIR__ . '/class/class-edu-sveawebpay.php');
-
-			add_filter('edu_integrations', array($this, 'add_integration'));
+		if ( isset( $_GET['activate'] ) ) {
+			unset( $_GET['activate'] );
 		}
-	}
-
-	public function add_integration($integrations)
-	{
-		$integrations[] = 'EDU_SveaWebPay';
-		return $integrations;
 	}
 }
 
-$edu_sveawebpay_loader = new EDU_SveaWebPay_Loader(__FILE__);
+if ( ! class_exists( 'EDU_SveaWebPay_Loader' ) ):
+
+	final class EDU_SveaWebPay_Loader {
+		public function __construct() {
+			add_action( 'plugins_loaded', array( $this, 'init' ) );
+		}
+
+		public function init() {
+			if ( class_exists( 'EDU_Integration' ) ) {
+				require_once( __DIR__ . '/vendor/autoload.php' ); // Load dependencies
+				require_once( __DIR__ . '/class/class-edu-sveawebpay.php' );
+
+				add_filter( 'edu_integrations', array( $this, 'add_integration' ) );
+			}
+		}
+
+		public function add_integration( $integrations ) {
+			$integrations[] = 'EDU_SveaWebPay';
+
+			return $integrations;
+		}
+	}
+
+	$edu_sveawebpay_loader = new EDU_SveaWebPay_Loader( __FILE__ );
 endif;
