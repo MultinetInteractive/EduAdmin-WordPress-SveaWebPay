@@ -64,6 +64,9 @@ if ( ! class_exists( 'EDU_SveaWebPay' ) ):
 		 *
 		 */
 		public function process_svearesponse() {
+			if ( 'no' === $this->get_option( 'enabled', 'no' ) ) {
+				return;
+			}
 			if ( isset( $_REQUEST['edu-thankyou'] ) && isset( $_REQUEST['svea'] ) && isset( $_REQUEST['response'] ) ) {
 				$filter = new XFiltering();
 				$f      = new XFilter( 'EventCustomerLnkID', '=', $_REQUEST['edu-thankyou'] );
@@ -124,6 +127,9 @@ if ( ! class_exists( 'EDU_SveaWebPay' ) ):
 		 * @param $bookingInfo EduAdminBookingInfo
 		 */
 		public function process_booking( $bookingInfo = null ) {
+			if ( 'no' === $this->get_option( 'enabled', 'no' ) ) {
+				return;
+			}
 			if ( isset( $_POST['act'] ) && 'bookCourse' === $_POST['act'] ) {
 				$bookingInfo->NoRedirect = true;
 
