@@ -1,6 +1,8 @@
 <?php
 defined( 'ABSPATH' ) or die( 'This plugin must be run within the scope of WordPress.' );
 
+require_once( __DIR__ . '/class-edu-sveawebpay-config.php' );
+
 use Svea\WebPay\WebPay;
 use Svea\WebPay\WebPayItem;
 use Svea\WebPay\Config\ConfigurationService;
@@ -104,7 +106,12 @@ if ( ! class_exists( 'EDU_SveaWebPay' ) ):
 					}
 				}
 
-				$wpConfig = ConfigurationService::getDefaultConfig();
+				if ( 'no' !== $this->get_option( 'testrun', 'no' ) ) {
+					//$wpConfig = ConfigurationService::getDefaultConfig();
+					$wpConfig = new EduSveaWebPayTestConfig( $this );
+				} else {
+					$wpConfig = new EduSveaWebPayProductionConfig( $this );
+				}
 
 				$response = ( new SveaResponse( $_REQUEST, $selectedCountry, $wpConfig ) )->getResponse();
 
@@ -157,8 +164,13 @@ if ( ! class_exists( 'EDU_SveaWebPay' ) ):
 
 				$currency = get_option( 'eduadmin-currency', 'SEK' );
 
-				$wpConfig = ConfigurationService::getDefaultConfig();
-				$wpOrder  = WebPay::createOrder( $wpConfig );
+				if ( 'no' !== $this->get_option( 'testrun', 'no' ) ) {
+					//$wpConfig = ConfigurationService::getDefaultConfig();
+					$wpConfig = new EduSveaWebPayTestConfig( $this );
+				} else {
+					$wpConfig = new EduSveaWebPayProductionConfig( $this );
+				}
+				$wpOrder = WebPay::createOrder( $wpConfig );
 
 				$orderRow = WebPayItem::orderRow();
 				$orderRow->setName( $bookingInfo->EventBooking->EventDescription );
