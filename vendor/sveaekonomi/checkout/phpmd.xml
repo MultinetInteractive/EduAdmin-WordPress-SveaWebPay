@@ -1,5 +1,4 @@
 <?xml version="1.0"?>
-<!--suppress ALL -->
 <ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          name="Svea Checkout PHPMD rule set"
          xmlns="http://pmd.sf.net/ruleset/1.0.0"

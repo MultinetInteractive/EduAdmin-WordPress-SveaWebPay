@@ -14,66 +14,96 @@ class Installer extends LibraryInstaller
      * @var array
      */
     private $supportedTypes = array(
-        'aimeos'       => 'AimeosInstaller',
-        'asgard'       => 'AsgardInstaller',
-        'agl'          => 'AglInstaller',
-        'annotatecms'  => 'AnnotateCmsInstaller',
-        'bitrix'       => 'BitrixInstaller',
-        'bonefish'     => 'BonefishInstaller',
-        'cakephp'      => 'CakePHPInstaller',
-        'chef'         => 'ChefInstaller',
-        'ccframework'  => 'ClanCatsFrameworkInstaller',
-        'codeigniter'  => 'CodeIgniterInstaller',
-        'concrete5'    => 'Concrete5Installer',
-        'craft'        => 'CraftInstaller',
-        'croogo'       => 'CroogoInstaller',
-        'dokuwiki'     => 'DokuWikiInstaller',
-        'dolibarr'     => 'DolibarrInstaller',
-        'drupal'       => 'DrupalInstaller',
-        'elgg'         => 'ElggInstaller',
-        'fuel'         => 'FuelInstaller',
-        'fuelphp'      => 'FuelphpInstaller',
-        'grav'         => 'GravInstaller',
-        'hurad'        => 'HuradInstaller',
-        'imagecms'     => 'ImageCMSInstaller',
-        'joomla'       => 'JoomlaInstaller',
-        'kirby'        => 'KirbyInstaller',
-        'kodicms'      => 'KodiCMSInstaller',
-        'kohana'       => 'KohanaInstaller',
-        'laravel'      => 'LaravelInstaller',
-        'lithium'      => 'LithiumInstaller',
-        'magento'      => 'MagentoInstaller',
-        'mako'         => 'MakoInstaller',
-        'mautic'       => 'MauticInstaller',
-        'mediawiki'    => 'MediaWikiInstaller',
-        'microweber'    => 'MicroweberInstaller',
-        'modulework'   => 'MODULEWorkInstaller',
-        'modxevo'      => 'MODXEvoInstaller',
-        'moodle'       => 'MoodleInstaller',
-        'october'      => 'OctoberInstaller',
-        'oxid'         => 'OxidInstaller',
-        'phpbb'        => 'PhpBBInstaller',
-        'pimcore'      => 'PimcoreInstaller',
-        'piwik'        => 'PiwikInstaller',
-        'ppi'          => 'PPIInstaller',
-        'puppet'       => 'PuppetInstaller',
-        'redaxo'       => 'RedaxoInstaller',
-        'roundcube'    => 'RoundcubeInstaller',
-        'shopware'     => 'ShopwareInstaller',
-        'silverstripe' => 'SilverStripeInstaller',
-        'smf'          => 'SMFInstaller',
-        'symfony1'     => 'Symfony1Installer',
-        'thelia'       => 'TheliaInstaller',
-        'tusk'         => 'TuskInstaller',
-        'typo3-cms'    => 'TYPO3CmsInstaller',
-        'typo3-flow'   => 'TYPO3FlowInstaller',
-        'whmcs'        => 'WHMCSInstaller',
-        'wolfcms'      => 'WolfCMSInstaller',
-        'wordpress'    => 'WordPressInstaller',
-        'zend'         => 'ZendInstaller',
-        'zikula'       => 'ZikulaInstaller',
-        'prestashop'   => 'PrestashopInstaller'
+	    'aimeos'        => 'AimeosInstaller',
+	    'asgard'        => 'AsgardInstaller',
+	    'attogram'      => 'AttogramInstaller',
+	    'agl'           => 'AglInstaller',
+	    'annotatecms'   => 'AnnotateCmsInstaller',
+	    'bitrix'        => 'BitrixInstaller',
+	    'bonefish'      => 'BonefishInstaller',
+	    'cakephp'       => 'CakePHPInstaller',
+	    'chef'          => 'ChefInstaller',
+	    'ccframework'   => 'ClanCatsFrameworkInstaller',
+	    'cockpit'       => 'CockpitInstaller',
+	    'codeigniter'   => 'CodeIgniterInstaller',
+	    'concrete5'     => 'Concrete5Installer',
+	    'craft'         => 'CraftInstaller',
+	    'croogo'        => 'CroogoInstaller',
+	    'dokuwiki'      => 'DokuWikiInstaller',
+	    'dolibarr'      => 'DolibarrInstaller',
+	    'decibel'       => 'DecibelInstaller',
+	    'drupal'        => 'DrupalInstaller',
+	    'elgg'          => 'ElggInstaller',
+	    'eliasis'       => 'EliasisInstaller',
+	    'ee3'           => 'ExpressionEngineInstaller',
+	    'ee2'           => 'ExpressionEngineInstaller',
+	    'fuel'          => 'FuelInstaller',
+	    'fuelphp'       => 'FuelphpInstaller',
+	    'grav'          => 'GravInstaller',
+	    'hurad'         => 'HuradInstaller',
+	    'imagecms'      => 'ImageCMSInstaller',
+	    'itop'          => 'ItopInstaller',
+	    'joomla'        => 'JoomlaInstaller',
+	    'kanboard'      => 'KanboardInstaller',
+	    'kirby'         => 'KirbyInstaller',
+	    'kodicms'       => 'KodiCMSInstaller',
+	    'kohana'        => 'KohanaInstaller',
+	    'laravel'       => 'LaravelInstaller',
+	    'lavalite'      => 'LavaLiteInstaller',
+	    'lithium'       => 'LithiumInstaller',
+	    'magento'       => 'MagentoInstaller',
+	    'mako'          => 'MakoInstaller',
+	    'maya'          => 'MayaInstaller',
+	    'mautic'        => 'MauticInstaller',
+	    'mediawiki'     => 'MediaWikiInstaller',
+	    'microweber'    => 'MicroweberInstaller',
+	    'modulework'    => 'MODULEWorkInstaller',
+	    'modxevo'       => 'MODXEvoInstaller',
+	    'moodle'        => 'MoodleInstaller',
+	    'october'       => 'OctoberInstaller',
+	    'ontowiki'      => 'OntoWikiInstaller',
+	    'oxid'          => 'OxidInstaller',
+	    'phpbb'         => 'PhpBBInstaller',
+	    'pimcore'       => 'PimcoreInstaller',
+	    'piwik'         => 'PiwikInstaller',
+	    'plentymarkets' => 'PlentymarketsInstaller',
+	    'ppi'           => 'PPIInstaller',
+	    'puppet'        => 'PuppetInstaller',
+	    'radphp'        => 'RadPHPInstaller',
+	    'phifty'        => 'PhiftyInstaller',
+	    'porto'         => 'PortoInstaller',
+	    'redaxo'        => 'RedaxoInstaller',
+	    'reindex'       => 'ReIndexInstaller',
+	    'roundcube'     => 'RoundcubeInstaller',
+	    'shopware'      => 'ShopwareInstaller',
+	    'silverstripe'  => 'SilverStripeInstaller',
+	    'smf'           => 'SMFInstaller',
+	    'sydes'         => 'SyDESInstaller',
+	    'symfony1'      => 'Symfony1Installer',
+	    'thelia'        => 'TheliaInstaller',
+	    'tusk'          => 'TuskInstaller',
+	    'typo3-cms'     => 'TYPO3CmsInstaller',
+	    'typo3-flow'    => 'TYPO3FlowInstaller',
+	    'vanilla'       => 'VanillaInstaller',
+	    'whmcs'         => 'WHMCSInstaller',
+	    'wolfcms'       => 'WolfCMSInstaller',
+	    'wordpress'     => 'WordPressInstaller',
+	    'yawik'         => 'YawikInstaller',
+	    'zend'          => 'ZendInstaller',
+	    'zikula'        => 'ZikulaInstaller',
+	    'prestashop'    => 'PrestashopInstaller'
     );
+
+	public function uninstall( InstalledRepositoryInterface $repo, PackageInterface $package ) {
+		if ( ! $repo->hasPackage( $package ) ) {
+			throw new \InvalidArgumentException( 'Package is not installed: ' . $package );
+		}
+
+		$repo->removePackage( $package );
+
+		$installPath = $this->getInstallPath( $package );
+		$this->io->write( sprintf( 'Deleting %s - %s', $installPath, $this->filesystem->removeDirectory( $installPath ) ? '<comment>deleted</comment>' : '<error>not deleted</error>' ) );
+	}
 
     /**
      * {@inheritDoc}
@@ -93,34 +123,6 @@ class Installer extends LibraryInstaller
         $installer = new $class($package, $this->composer, $this->getIO());
 
         return $installer->getInstallPath($package, $frameworkType);
-    }
-
-    public function uninstall(InstalledRepositoryInterface $repo, PackageInterface $package)
-    {
-        if (!$repo->hasPackage($package)) {
-            throw new \InvalidArgumentException('Package is not installed: '.$package);
-        }
-
-        $repo->removePackage($package);
-
-        $installPath = $this->getInstallPath($package);
-        $this->io->write(sprintf('Deleting %s - %s', $installPath, $this->filesystem->removeDirectory($installPath) ? '<comment>deleted</comment>' : '<error>not deleted</error>'));
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function supports($packageType)
-    {
-        $frameworkType = $this->findFrameworkType($packageType);
-
-        if ($frameworkType === false) {
-            return false;
-        }
-
-        $locationPattern = $this->getLocationPattern($frameworkType);
-
-        return preg_match('#' . $frameworkType . '-' . $locationPattern . '#', $packageType, $matches) === 1;
     }
 
     /**
@@ -145,6 +147,30 @@ class Installer extends LibraryInstaller
         return $frameworkType;
     }
 
+	/**
+	 * Get I/O object
+	 *
+	 * @return IOInterface
+	 */
+	private function getIO() {
+		return $this->io;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function supports( $packageType ) {
+		$frameworkType = $this->findFrameworkType( $packageType );
+
+		if ( $frameworkType === false ) {
+			return false;
+		}
+
+		$locationPattern = $this->getLocationPattern( $frameworkType );
+
+		return preg_match( '#' . $frameworkType . '-' . $locationPattern . '#', $packageType, $matches ) === 1;
+	}
+
     /**
      * Get the second part of the regular expression to check for support of a
      * package type
@@ -164,15 +190,5 @@ class Installer extends LibraryInstaller
         }
 
         return $pattern ? : '(\w+)';
-    }
-
-    /**
-     * Get I/O object
-     *
-     * @return IOInterface
-     */
-    private function getIO()
-    {
-        return $this->io;
     }
 }

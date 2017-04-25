@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "ef25a453728e763bb62f6cab75827752",
+    "content-hash": "770f65bdfaf02105eb261fae92b4393f",
     "packages": [
         {
             "name": "composer/installers",
-            "version": "v1.0.25",
+            "version": "v1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/installers.git",
-                "reference": "36e5b5843203d7f1cf6ffb0305a97e014387bd8e"
+                "reference": "79ad876c7498c0bbfe7eed065b8651c93bfd6045"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/installers/zipball/36e5b5843203d7f1cf6ffb0305a97e014387bd8e",
-                "reference": "36e5b5843203d7f1cf6ffb0305a97e014387bd8e",
+                "url": "https://api.github.com/repos/composer/installers/zipball/79ad876c7498c0bbfe7eed065b8651c93bfd6045",
+                "reference": "79ad876c7498c0bbfe7eed065b8651c93bfd6045",
                 "shasum": ""
             },
             "require": {
@@ -59,32 +59,43 @@
             "keywords": [
                 "Craft",
                 "Dolibarr",
+                "Eliasis",
                 "Hurad",
                 "ImageCMS",
+                "Kanboard",
                 "MODX Evo",
                 "Mautic",
+                "Maya",
                 "OXID",
+                "Plentymarkets",
+                "Porto",
+                "RadPHP",
                 "SMF",
                 "Thelia",
                 "WolfCMS",
                 "agl",
                 "aimeos",
                 "annotatecms",
+                "attogram",
                 "bitrix",
                 "cakephp",
                 "chef",
+                "cockpit",
                 "codeigniter",
                 "concrete5",
                 "croogo",
                 "dokuwiki",
                 "drupal",
                 "elgg",
+                "expressionengine",
                 "fuelphp",
                 "grav",
                 "installer",
+                "itop",
                 "joomla",
                 "kohana",
                 "laravel",
+                "lavalite",
                 "lithium",
                 "magento",
                 "mako",
@@ -95,29 +106,32 @@
                 "piwik",
                 "ppi",
                 "puppet",
+                "reindex",
                 "roundcube",
                 "shopware",
                 "silverstripe",
+                "sydes",
                 "symfony",
                 "typo3",
                 "wordpress",
+                "yawik",
                 "zend",
                 "zikula"
             ],
-            "time": "2016-04-13T19:46:30+00:00"
+            "time": "2017-04-24T06:37:16+00:00"
         },
         {
             "name": "sveaekonomi/checkout",
-            "version": "1.0.2",
+            "version": "1.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sveawebpay/php-checkout.git",
-                "reference": "d8b80abe2738d02c35b6e33a2784f3a232d332f0"
+                "reference": "0212c9d2b3ec05b7a2cfbb8ce27222eb4dbe44ab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sveawebpay/php-checkout/zipball/d8b80abe2738d02c35b6e33a2784f3a232d332f0",
-                "reference": "d8b80abe2738d02c35b6e33a2784f3a232d332f0",
+                "url": "https://api.github.com/repos/sveawebpay/php-checkout/zipball/0212c9d2b3ec05b7a2cfbb8ce27222eb4dbe44ab",
+                "reference": "0212c9d2b3ec05b7a2cfbb8ce27222eb4dbe44ab",
                 "shasum": ""
             },
             "require": {
@@ -150,7 +164,7 @@
                 }
             ],
             "description": "Php integration library for Svea Checkout",
-            "time": "2017-03-20T10:20:40+00:00"
+            "time": "2017-04-13T13:53:55+00:00"
         },
         {
             "name": "sveaekonomi/webpay",
@@ -192,7 +206,7 @@
                 }
             ],
             "description": "Php integration library for webpay and admin functionality.",
-            "time": "2017-03-30 08:03:31"
+            "time": "2017-03-30T08:03:31+00:00"
         }
     ],
     "packages-dev": [],
@@ -203,6 +217,8 @@
     },
     "prefer-stable": true,
     "prefer-lowest": false,
-    "platform": [],
+    "platform": {
+        "php": ">=5.0.1"
+    },
     "platform-dev": []
 }

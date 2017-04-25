@@ -1,17 +1,61 @@
 [
     {
+      "name": "sveaekonomi/webpay",
+      "version": "dev-master",
+      "version_normalized": "9999999-dev",
+      "source": {
+        "type": "git",
+        "url": "https://github.com/sveawebpay/php-integration.git",
+        "reference": "161371a613a246a6a140857e2a91055aea0bd90e"
+      },
+      "dist": {
+        "type": "zip",
+        "url": "https://api.github.com/repos/sveawebpay/php-integration/zipball/161371a613a246a6a140857e2a91055aea0bd90e",
+        "reference": "161371a613a246a6a140857e2a91055aea0bd90e",
+        "shasum": ""
+      },
+      "require": {
+        "ext-curl": "*",
+        "ext-soap": "*",
+        "php": ">=5.3.0",
+        "sveaekonomi/checkout": "^1.0.0"
+      },
+      "require-dev": {
+        "phpunit/phpunit": "~4.8 || ~5.5"
+      },
+      "time": "2017-03-30T08:03:31+00:00",
+      "type": "library",
+      "installation-source": "source",
+      "autoload": {
+        "psr-4": {
+          "Svea\\WebPay\\": "src"
+        }
+      },
+      "notification-url": "https://packagist.org/downloads/",
+      "license": [
+        "Apache-2.0"
+      ],
+      "authors": [
+        {
+          "name": "Svea Ekonomi AB",
+          "email": "support-webpay@sveaekonomi.se"
+        }
+      ],
+      "description": "Php integration library for webpay and admin functionality."
+    },
+  {
         "name": "composer/installers",
-        "version": "v1.0.25",
-        "version_normalized": "1.0.25.0",
+    "version": "v1.3.0",
+    "version_normalized": "1.3.0.0",
         "source": {
             "type": "git",
             "url": "https://github.com/composer/installers.git",
-            "reference": "36e5b5843203d7f1cf6ffb0305a97e014387bd8e"
+          "reference": "79ad876c7498c0bbfe7eed065b8651c93bfd6045"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/composer/installers/zipball/36e5b5843203d7f1cf6ffb0305a97e014387bd8e",
-            "reference": "36e5b5843203d7f1cf6ffb0305a97e014387bd8e",
+          "url": "https://api.github.com/repos/composer/installers/zipball/79ad876c7498c0bbfe7eed065b8651c93bfd6045",
+          "reference": "79ad876c7498c0bbfe7eed065b8651c93bfd6045",
             "shasum": ""
         },
         "require": {
@@ -25,7 +69,7 @@
             "composer/composer": "1.0.*@dev",
             "phpunit/phpunit": "4.1.*"
         },
-        "time": "2016-04-13T19:46:30+00:00",
+    "time": "2017-04-24T06:37:16+00:00",
         "type": "composer-plugin",
         "extra": {
             "class": "Composer\\Installers\\Plugin",
@@ -55,32 +99,43 @@
         "keywords": [
             "Craft",
             "Dolibarr",
+          "Eliasis",
             "Hurad",
             "ImageCMS",
+          "Kanboard",
             "MODX Evo",
             "Mautic",
+          "Maya",
             "OXID",
+          "Plentymarkets",
+          "Porto",
+          "RadPHP",
             "SMF",
             "Thelia",
             "WolfCMS",
             "agl",
             "aimeos",
             "annotatecms",
+          "attogram",
             "bitrix",
             "cakephp",
             "chef",
+          "cockpit",
             "codeigniter",
             "concrete5",
             "croogo",
             "dokuwiki",
             "drupal",
             "elgg",
+          "expressionengine",
             "fuelphp",
             "grav",
             "installer",
+          "itop",
             "joomla",
             "kohana",
             "laravel",
+          "lavalite",
             "lithium",
             "magento",
             "mako",
@@ -91,29 +146,32 @@
             "piwik",
             "ppi",
             "puppet",
+          "reindex",
             "roundcube",
             "shopware",
             "silverstripe",
+          "sydes",
             "symfony",
             "typo3",
             "wordpress",
+          "yawik",
             "zend",
             "zikula"
         ]
     },
     {
         "name": "sveaekonomi/checkout",
-        "version": "1.0.2",
-        "version_normalized": "1.0.2.0",
+      "version": "1.0.4",
+      "version_normalized": "1.0.4.0",
         "source": {
             "type": "git",
             "url": "https://github.com/sveawebpay/php-checkout.git",
-            "reference": "d8b80abe2738d02c35b6e33a2784f3a232d332f0"
+          "reference": "0212c9d2b3ec05b7a2cfbb8ce27222eb4dbe44ab"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/sveawebpay/php-checkout/zipball/d8b80abe2738d02c35b6e33a2784f3a232d332f0",
-            "reference": "d8b80abe2738d02c35b6e33a2784f3a232d332f0",
+          "url": "https://api.github.com/repos/sveawebpay/php-checkout/zipball/0212c9d2b3ec05b7a2cfbb8ce27222eb4dbe44ab",
+          "reference": "0212c9d2b3ec05b7a2cfbb8ce27222eb4dbe44ab",
             "shasum": ""
         },
         "require": {
@@ -129,7 +187,7 @@
             "sebastian/phpcpd": "^2.0.4",
             "squizlabs/php_codesniffer": "2.*"
         },
-        "time": "2017-03-20T10:20:40+00:00",
+      "time": "2017-04-13T13:53:55+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -148,49 +206,5 @@
             }
         ],
         "description": "Php integration library for Svea Checkout"
-    },
-    {
-        "name": "sveaekonomi/webpay",
-        "version": "dev-master",
-        "version_normalized": "9999999-dev",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/sveawebpay/php-integration.git",
-            "reference": "161371a613a246a6a140857e2a91055aea0bd90e"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/sveawebpay/php-integration/zipball/161371a613a246a6a140857e2a91055aea0bd90e",
-            "reference": "161371a613a246a6a140857e2a91055aea0bd90e",
-            "shasum": ""
-        },
-        "require": {
-            "ext-curl": "*",
-            "ext-soap": "*",
-            "php": ">=5.3.0",
-            "sveaekonomi/checkout": "^1.0.0"
-        },
-        "require-dev": {
-            "phpunit/phpunit": "~4.8 || ~5.5"
-        },
-        "time": "2017-03-30T08:03:31+00:00",
-        "type": "library",
-        "installation-source": "source",
-        "autoload": {
-            "psr-4": {
-                "Svea\\WebPay\\": "src"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "Apache-2.0"
-        ],
-        "authors": [
-            {
-                "name": "Svea Ekonomi AB",
-                "email": "support-webpay@sveaekonomi.se"
-            }
-        ],
-        "description": "Php integration library for webpay and admin functionality."
     }
 ]

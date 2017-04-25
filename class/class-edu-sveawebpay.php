@@ -19,7 +19,7 @@ if ( ! class_exists( 'EDU_SveaWebPay' ) ):
 		 */
 		public function __construct() {
 			$this->id          = 'eduadmin-sveawebpay';
-			$this->displayName = __( 'Svea Webpay', 'eduadmin-sveawebpay' );
+			$this->displayName = __( 'Svea Webpay (Checkout)', 'eduadmin-sveawebpay' );
 			$this->description = '';
 
 			$this->init_form_fields();
@@ -66,12 +66,16 @@ if ( ! class_exists( 'EDU_SveaWebPay' ) ):
 		 *
 		 */
 		public function process_svearesponse() {
+
 			if ( 'no' === $this->get_option( 'enabled', 'no' ) ) {
 				return;
 			}
-			if ( isset( $_REQUEST['edu-thankyou'] ) && isset( $_REQUEST['svea'] ) && isset( $_REQUEST['response'] ) ) {
+			if ( ( isset( $_REQUEST['edu-thankyou'] ) && isset( $_REQUEST['svea'] ) ) || ( isset( $_REQUEST['edu-cancel'] ) && isset( $_REQUEST['svea'] ) ) ) {
+
+				$eclId = ( isset( $_REQUEST['edu-thankyou'] ) ? $_REQUEST['edu-thankyou'] : $_REQUEST['edu-cancel'] );
+
 				$filter = new XFiltering();
-				$f      = new XFilter( 'EventCustomerLnkID', '=', $_REQUEST['edu-thankyou'] );
+				$f      = new XFilter( 'EventCustomerLnkID', '=', $eclId );
 				$filter->AddItem( $f );
 
 				$eventBooking = EDU()->api->GetEventBookingV2( EDU()->get_token(), '', $filter->ToString() )[0];
@@ -107,7 +111,6 @@ if ( ! class_exists( 'EDU_SveaWebPay' ) ):
 				}
 
 				if ( 'no' !== $this->get_option( 'testrun', 'no' ) ) {
-					//$wpConfig = ConfigurationService::getDefaultConfig();
 					$wpConfig = new EduSveaWebPayTestConfig( $this );
 				} else {
 					$wpConfig = new EduSveaWebPayProductionConfig( $this );
@@ -160,17 +163,17 @@ if ( ! class_exists( 'EDU_SveaWebPay' ) ):
 					}
 				}
 
-				$selectedLocale = explode( '-', $selectedLocale )[0];
+				//$selectedLocale = explode( '-', $selectedLocale )[0];
 
 				$currency = get_option( 'eduadmin-currency', 'SEK' );
 
 				if ( 'no' !== $this->get_option( 'testrun', 'no' ) ) {
-					//$wpConfig = ConfigurationService::getDefaultConfig();
 					$wpConfig = new EduSveaWebPayTestConfig( $this );
 				} else {
 					$wpConfig = new EduSveaWebPayProductionConfig( $this );
 				}
-				$wpOrder = WebPay::createOrder( $wpConfig );
+				#$wpOrder = WebPay::createOrder( $wpConfig );
+				$wpOrder = WebPay::checkout( $wpConfig );
 
 				$orderRow = WebPayItem::orderRow();
 				$orderRow->setName( $bookingInfo->EventBooking->EventDescription );
@@ -200,6 +203,12 @@ if ( ! class_exists( 'EDU_SveaWebPay' ) ):
 					$customer->setZipCode( $bookingInfo->Customer->Zip );
 				}
 
+				$zipPreset = WebPayItem::presetValue()
+				                       ->setTypeName( \Svea\WebPay\Checkout\Model\PresetValue::POSTAL_CODE )
+				                       ->setValue( ! empty( $bookingInfo->Customer->InvoiceZip ) ? $bookingInfo->Customer->InvoiceZip : $bookingInfo->Customer->Zip )
+				                       ->setIsReadonly( false );
+				$wpOrder->addPresetValue( $zipPreset );
+
 				if ( ! empty( $bookingInfo->Customer->InvoiceCity ) ) {
 					$customer->setLocality( $bookingInfo->Customer->InvoiceCity );
 				} else {
@@ -208,6 +217,11 @@ if ( ! class_exists( 'EDU_SveaWebPay' ) ):
 
 				if ( ! empty( $bookingInfo->Customer->Phone ) ) {
 					$customer->setPhoneNumber( $bookingInfo->Customer->Phone );
+					$phonePreset = WebPayItem::presetValue()
+					                         ->setTypeName( \Svea\WebPay\Checkout\Model\PresetValue::PHONE_NUMBER )
+					                         ->setValue( $bookingInfo->Customer->Phone )
+					                         ->setIsReadonly( false );
+					$wpOrder->addPresetValue( $phonePreset );
 				}
 
 				if ( ! empty( $bookingInfo->Customer->InvoiceEmail ) ) {
@@ -215,6 +229,12 @@ if ( ! class_exists( 'EDU_SveaWebPay' ) ):
 				} else {
 					$customer->setEmail( $bookingInfo->Customer->Email );
 				}
+
+				$emailPreset = WebPayItem::presetValue()
+				                         ->setTypeName( \Svea\WebPay\Checkout\Model\PresetValue::EMAIL_ADDRESS )
+				                         ->setValue( ! empty( $bookingInfo->Customer->InvoiceEmail ) ? $bookingInfo->Customer->InvoiceEmail : $bookingInfo->Customer->Email )
+				                         ->setIsReadonly( false );
+				$wpOrder->addPresetValue( $emailPreset );
 
 				$customer->setIpAddress( EDU()->get_ip_adress() );
 
@@ -225,20 +245,35 @@ if ( ! class_exists( 'EDU_SveaWebPay' ) ):
 				$defaultThankYou = @get_page_link( get_option( 'eduadmin-thankYouPage', '/' ) ) . "?edu-thankyou=" . $bookingInfo->EventBooking->EventCustomerLnkID . '&svea=1';
 				$defaultCancel   = $baseUrl . "?edu-cancel=" . $bookingInfo->EventBooking->EventCustomerLnkID . '&svea=1';
 
-				$wpForm = $wpOrder
+				$defaultPushUrl = $baseUrl . '?edu-thankyou=' . $bookingInfo->EventBooking->EventCustomerLnkID . '&svea=1';
+
+				$defaultTermsUrl = get_option( 'eduadmin-bookingTermsLink' );
+
+				//$defaultCheckoutUrl = $surl . $_SERVER['REQUEST_URI'];
+
+				$wpBuild = $wpOrder
 					->setCurrency( $currency )
 					->setCountryCode( $selectedCountry )
-					->setOrderDate( date( 'c' ) )
+					//->setOrderDate( date( 'c' ) )
 					->setClientOrderNumber( $bookingInfo->EventBooking->EventCustomerLnkID )
 					->addOrderRow( $orderRow )
-					->addCustomerDetails( $customer )
-					->usePayPage()
-					->setPayPageLanguage( $selectedLocale )
-					->setReturnUrl( apply_filters( 'eduadmin-thankyou-url', $defaultThankYou ) )
-					->setCancelUrl( apply_filters( 'eduadmin-cancel-url', $defaultCancel ) )
-					->getPaymentUrl();
-
-				if ( $wpForm->accepted ) {
+					//->addCustomerDetails( $customer )
+					//->usePayPage()
+					//->setPayPageLanguage( $selectedLocale )
+					->setLocale( $selectedLocale )
+					//->setReturnUrl( apply_filters( 'eduadmin-thankyou-url', $defaultThankYou ) )
+					//->setCancelUrl( apply_filters( 'eduadmin-cancel-url', $defaultCancel ) );
+					->setTermsUri( $defaultTermsUrl )
+					->setConfirmationUri( $defaultThankYou )
+					->setPushUri( $defaultPushUrl )
+					->setCheckoutUri( $defaultCancel ); // We have no "checkout"-url.. So we just cancel the booking instead.
+				//$wpForm  = $wpBuild->getPaymentUrl();
+				$wpForm = $wpBuild->createOrder();
+				//print_r( $wpForm );
+				if ( array_key_exists( 'Gui', $wpForm ) ) {
+					echo $wpForm['Gui']['Snippet'];
+				}
+				/*if ( $wpForm->accepted ) {
 					if ( 'no' === $this->get_option( 'testrun', 'no' ) ) {
 						echo '<script type="text/javascript">location.href = "' . $wpForm->url . '";</script>';
 					} else {
@@ -248,7 +283,7 @@ if ( ! class_exists( 'EDU_SveaWebPay' ) ):
 					add_filter( 'edu-booking-error', function( $errors ) use ( &$wpForm ) {
 						$errors[] = $wpForm->errormessage;
 					} );
-				}
+				}*/
 			}
 		}
 	}
