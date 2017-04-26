@@ -132,12 +132,12 @@ if ( ! class_exists( 'EDU_SveaWebPay' ) ):
 
 				//$response = ( new SveaResponse( $_REQUEST, $selectedCountry, $wpConfig ) )->getResponse();
 
-				$sveaOrderId = get_transient( 'eduadmin-sveaorderid-' . $ebi->EventBooking->EventCustomerLnkID, - 1 );
+				$sveaOrderId = get_transient( 'eduadmin-sveaorderid-' . $ebi->EventBooking->EventCustomerLnkID, 0 );
 
 				if ( $sveaOrderId > 0 ) {
 					$wpOrder = WebPay::checkout( $wpConfig );
 
-					$wpOrder->setCheckoutOrderId( $sveaOrderId );
+					$wpOrder->setCheckoutOrderId( intval( $sveaOrderId ) );
 
 					$order = $wpOrder->getOrder();
 				}
