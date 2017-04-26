@@ -25,9 +25,23 @@ if ( ! class_exists( 'EDU_SveaWebPay' ) ):
 			$this->init_form_fields();
 			$this->init_settings();
 
+			add_action( 'eduadmin-checkpaymentplugins', array( $this, 'intercept_booking' ) );
+
 			add_action( 'eduadmin-processbooking', array( $this, 'process_booking' ) );
 
 			add_action( 'wp_loaded', array( $this, 'process_svearesponse' ) );
+		}
+
+		/**
+		 * @param $bookingInfo EduAdminBookingInfo
+		 */
+		public function intercept_booking( $bookingInfo = null ) {
+			if ( 'no' === $this->get_option( 'enabled', 'no' ) ) {
+				return;
+			}
+			if ( isset( $_POST['act'] ) && 'bookCourse' === $_POST['act'] ) {
+				$bookingInfo->NoRedirect = true;
+			}
 		}
 
 		/**
@@ -116,9 +130,19 @@ if ( ! class_exists( 'EDU_SveaWebPay' ) ):
 					$wpConfig = new EduSveaWebPayProductionConfig( $this );
 				}
 
-				$response = ( new SveaResponse( $_REQUEST, $selectedCountry, $wpConfig ) )->getResponse();
+				//$response = ( new SveaResponse( $_REQUEST, $selectedCountry, $wpConfig ) )->getResponse();
 
-				if ( $response->accepted ) {
+				$sveaOrderId = get_transient( 'eduadmin-sveaorderid-' . $ebi->EventBooking->EventCustomerLnkID, - 1 );
+
+				if ( $sveaOrderId > 0 ) {
+					$wpOrder = WebPay::checkout( $wpConfig );
+
+					$wpOrder->setCheckoutOrderId( $sveaOrderId );
+
+					$order = $wpOrder->getOrder();
+				}
+
+				if ( 'Cancelled' !== $order['Status'] ) {
 					EDU()->api->SetValidPayment( EDU()->get_token(), $ebi->EventBooking->EventCustomerLnkID );
 				} else {
 					EDU()->api->SetInvalidPayment( EDU()->get_token(), $ebi->EventBooking->EventCustomerLnkID );
@@ -128,7 +152,9 @@ if ( ! class_exists( 'EDU_SveaWebPay' ) ):
 				$cat     = get_option( 'eduadmin-rewriteBaseUrl' );
 				$baseUrl = $surl . '/' . $cat;
 
-				wp_redirect( $baseUrl . '/profile/myprofile?payment=' . ( $response->accepted ? '1' : '0' ) );
+				delete_transient( 'eduadmin-sveaorderid-' . $ebi->EventBooking->EventCustomerLnkID );
+
+				wp_redirect( $baseUrl . '/profile/myprofile?payment=' . ( 'Cancelled' !== $order['Status'] ? '1' : '0' ) );
 				exit();
 			}
 		}
@@ -242,10 +268,10 @@ if ( ! class_exists( 'EDU_SveaWebPay' ) ):
 				$cat     = get_option( 'eduadmin-rewriteBaseUrl' );
 				$baseUrl = $surl . '/' . $cat;
 
-				$defaultThankYou = @get_page_link( get_option( 'eduadmin-thankYouPage', '/' ) ) . "?edu-thankyou=" . $bookingInfo->EventBooking->EventCustomerLnkID . '&svea=1';
-				$defaultCancel   = $baseUrl . "?edu-cancel=" . $bookingInfo->EventBooking->EventCustomerLnkID . '&svea=1';
+				$defaultThankYou = @get_page_link( get_option( 'eduadmin-thankYouPage', '/' ) ) . "?edu-thankyou=" . $bookingInfo->EventBooking->EventCustomerLnkID . '&svea=1&svea_order_id={checkout.order.uri}';
+				$defaultCancel   = $baseUrl . "?edu-cancel=" . $bookingInfo->EventBooking->EventCustomerLnkID . '&svea=1&svea_order_id={checkout.order.uri}';
 
-				$defaultPushUrl = $baseUrl . '?edu-thankyou=' . $bookingInfo->EventBooking->EventCustomerLnkID . '&svea=1';
+				$defaultPushUrl = $baseUrl . '?edu-thankyou=' . $bookingInfo->EventBooking->EventCustomerLnkID . '&svea=1&svea_order_id={checkout.order.uri}';
 
 				$defaultTermsUrl = get_option( 'eduadmin-bookingTermsLink' );
 
@@ -269,7 +295,9 @@ if ( ! class_exists( 'EDU_SveaWebPay' ) ):
 					->setCheckoutUri( $defaultCancel ); // We have no "checkout"-url.. So we just cancel the booking instead.
 				//$wpForm  = $wpBuild->getPaymentUrl();
 				$wpForm = $wpBuild->createOrder();
-				//print_r( $wpForm );
+
+				set_transient( 'eduadmin-sveaorderid-' . $bookingInfo->EventBooking->EventCustomerLnkID, $wpForm['OrderId'], HOUR_IN_SECONDS );
+
 				if ( array_key_exists( 'Gui', $wpForm ) ) {
 					echo $wpForm['Gui']['Snippet'];
 				}
