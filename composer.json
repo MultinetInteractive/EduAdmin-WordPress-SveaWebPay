@@ -6,6 +6,7 @@
   "support": {
     "issues": "https://github.com/multinetinteractive/eduadmin-wordpress-sveawebpay/issues"
   },
+  "license": "GPL-3.0+",
   "minimum-stability": "dev",
   "prefer-stable": true,
   "require": {
