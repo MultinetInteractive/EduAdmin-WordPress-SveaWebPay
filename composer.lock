@@ -1,23 +1,23 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "770f65bdfaf02105eb261fae92b4393f",
+    "content-hash": "ac45198d7adc6c2baa6fefdfcfd801c6",
     "packages": [
         {
             "name": "composer/installers",
-            "version": "v1.3.0",
+            "version": "v1.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/installers.git",
-                "reference": "79ad876c7498c0bbfe7eed065b8651c93bfd6045"
+                "reference": "7d610d50aae61ae7ed6675e58efeabdf279bb5e3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/installers/zipball/79ad876c7498c0bbfe7eed065b8651c93bfd6045",
-                "reference": "79ad876c7498c0bbfe7eed065b8651c93bfd6045",
+                "url": "https://api.github.com/repos/composer/installers/zipball/7d610d50aae61ae7ed6675e58efeabdf279bb5e3",
+                "reference": "7d610d50aae61ae7ed6675e58efeabdf279bb5e3",
                 "shasum": ""
             },
             "require": {
@@ -29,7 +29,7 @@
             },
             "require-dev": {
                 "composer/composer": "1.0.*@dev",
-                "phpunit/phpunit": "4.1.*"
+                "phpunit/phpunit": "^4.8.36"
             },
             "type": "composer-plugin",
             "extra": {
@@ -63,7 +63,9 @@
                 "Hurad",
                 "ImageCMS",
                 "Kanboard",
+                "Lan Management System",
                 "MODX Evo",
+                "MantisBT",
                 "Mautic",
                 "Maya",
                 "OXID",
@@ -72,6 +74,7 @@
                 "RadPHP",
                 "SMF",
                 "Thelia",
+                "Whmcs",
                 "WolfCMS",
                 "agl",
                 "aimeos",
@@ -86,6 +89,7 @@
                 "croogo",
                 "dokuwiki",
                 "drupal",
+                "eZ Platform",
                 "elgg",
                 "expressionengine",
                 "fuelphp",
@@ -93,24 +97,30 @@
                 "installer",
                 "itop",
                 "joomla",
+                "known",
                 "kohana",
                 "laravel",
                 "lavalite",
                 "lithium",
                 "magento",
+                "majima",
                 "mako",
                 "mediawiki",
                 "modulework",
+                "modx",
                 "moodle",
+                "osclass",
                 "phpbb",
                 "piwik",
                 "ppi",
                 "puppet",
+                "pxcms",
                 "reindex",
                 "roundcube",
                 "shopware",
                 "silverstripe",
                 "sydes",
+                "sylius",
                 "symfony",
                 "typo3",
                 "wordpress",
@@ -118,7 +128,34 @@
                 "zend",
                 "zikula"
             ],
-            "time": "2017-04-24T06:37:16+00:00"
+            "time": "2020-02-07T10:39:20+00:00"
+        },
+        {
+            "name": "multinetinteractive/eduadmin-wordpress",
+            "version": "2.13.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/MultinetInteractive/EduAdmin-WordPress.git",
+                "reference": "c2526e36f94d21be9a56a46a365271850d217f5e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/MultinetInteractive/EduAdmin-WordPress/zipball/c2526e36f94d21be9a56a46a365271850d217f5e",
+                "reference": "c2526e36f94d21be9a56a46a365271850d217f5e",
+                "shasum": ""
+            },
+            "require": {
+                "composer/installers": "~1",
+                "php": ">=5.2"
+            },
+            "type": "wordpress-plugin",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0-or-later"
+            ],
+            "description": "EduAdmin - WordPress-plugin",
+            "homepage": "http://www.multinet.se/",
+            "time": "2020-02-06T15:30:57+00:00"
         },
         {
             "name": "sveaekonomi/checkout",
@@ -187,7 +224,7 @@
                 "sveaekonomi/checkout": "^1.0.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "~4.8 || ~5.5"
+                "phpunit/phpunit": "^5 || ^6 || ^7"
             },
             "type": "library",
             "autoload": {
@@ -205,7 +242,7 @@
                     "email": "support-webpay@sveaekonomi.se"
                 }
             ],
-            "description": "Php integration library for webpay and admin functionality.",
+            "description": "Php integration library for Svea Ekonomis payment methods",
             "time": "2017-03-30T08:03:31+00:00"
         }
     ],
