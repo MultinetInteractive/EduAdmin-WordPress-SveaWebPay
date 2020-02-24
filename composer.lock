@@ -132,16 +132,16 @@
         },
         {
             "name": "multinetinteractive/eduadmin-wordpress",
-            "version": "2.13.1",
+            "version": "2.14.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/MultinetInteractive/EduAdmin-WordPress.git",
-                "reference": "c2526e36f94d21be9a56a46a365271850d217f5e"
+                "reference": "8cd5b8afec958664c37ca3108051384c5d4afd84"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/MultinetInteractive/EduAdmin-WordPress/zipball/c2526e36f94d21be9a56a46a365271850d217f5e",
-                "reference": "c2526e36f94d21be9a56a46a365271850d217f5e",
+                "url": "https://api.github.com/repos/MultinetInteractive/EduAdmin-WordPress/zipball/8cd5b8afec958664c37ca3108051384c5d4afd84",
+                "reference": "8cd5b8afec958664c37ca3108051384c5d4afd84",
                 "shasum": ""
             },
             "require": {
@@ -155,7 +155,7 @@
             ],
             "description": "EduAdmin - WordPress-plugin",
             "homepage": "http://www.multinet.se/",
-            "time": "2020-02-06T15:30:57+00:00"
+            "time": "2020-02-24T10:28:32+00:00"
         },
         {
             "name": "sveaekonomi/checkout",
