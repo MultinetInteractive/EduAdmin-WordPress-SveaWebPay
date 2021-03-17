@@ -1,2 +1,10 @@
 .idea
 .vscode
+vendor/bin
+vendor/**/.github
+vendor/**/.circleci
+vendor/**/docs/
+vendor/**/test/
+vendor/**/tests/
+vendoer/**/example/
+vendoer/**/examples/
