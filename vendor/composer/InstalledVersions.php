@@ -30,7 +30,7 @@ private static $installed = array (
     'aliases' => 
     array (
     ),
-    'reference' => '5bdb2bc0180c5c2aa7d2d3e3eaf36fb74d0bc0bc',
+    'reference' => 'd2e04db24ec0002685123da1d2c44737560e7f5a',
     'name' => 'multinetinteractive/eduadmin-wordpress-sveawebpay',
   ),
   'versions' => 
@@ -51,7 +51,7 @@ private static $installed = array (
       'aliases' => 
       array (
       ),
-      'reference' => '5bdb2bc0180c5c2aa7d2d3e3eaf36fb74d0bc0bc',
+      'reference' => 'd2e04db24ec0002685123da1d2c44737560e7f5a',
     ),
     'roundcube/plugin-installer' => 
     array (
