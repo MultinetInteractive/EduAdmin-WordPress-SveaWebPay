@@ -12,7 +12,7 @@ use Svea\WebPay\HostedService\Payment\CardPayment;
 /**
  * @author Kristian Grossman-Madsen for Svea Svea\WebPay\WebPay
  */
-class RecurCardPaymentIntegrationTest extends \PHPUnit_Framework_TestCase
+class RecurCardPaymentIntegrationTest extends \PHPUnit\Framework\TestCase
 {
 
     /**
@@ -32,7 +32,7 @@ class RecurCardPaymentIntegrationTest extends \PHPUnit_Framework_TestCase
         // 1. remove (put in a comment) the above code to enable the test
         // 2. run the test, and get the subscription paymenturl from the output
         // 3. go to the paymenturl and complete the transaction.
-        // 4. go to https://test.sveaekonomi.se/webpay-admin/admin/start.xhtml
+        // 4. go to https://webpaypaymentgatewaystage.svea.com/webpay-admin/admin/start.xhtml
         // 5. retrieve the subscriptionId from the response in the transaction log
         // 6. use the subscriptionId to run 
 

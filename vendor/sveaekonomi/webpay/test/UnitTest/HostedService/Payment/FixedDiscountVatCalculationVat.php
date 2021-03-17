@@ -4,14 +4,14 @@ namespace Svea\WebPay\Test\UnitTest\HostedService\Payment;
 
 use Svea\WebPay\WebPay;
 use Svea\WebPay\WebPayItem;
-use PHPUnit_Framework_TestCase;
+use \PHPUnit\Framework\TestCase;
 use Svea\WebPay\Config\ConfigurationService;
 use Svea\WebPay\Constant\PaymentMethod;
 
 /**
  * @author Kristian Grossman-Madsen
  */
-class FixedDiscountVatCalculationTest extends PHPUnit_Framework_TestCase
+class FixedDiscountVatCalculationTest extends \PHPUnit\Framework\TestCase
 {
 
     public function test_bv_order_sent_incvat_two_decimals_with_both_discounts()
@@ -49,7 +49,7 @@ class FixedDiscountVatCalculationTest extends PHPUnit_Framework_TestCase
                 ->setName("-20i@6%*1")
         );
         $request = $order->usePaymentMethod(PaymentMethod::KORTCERT)
-            ->setReturnUrl("https://test.sveaekonomi.se/webpay-admin/admin/merchantresponsetest.xhtml")
+            ->setReturnUrl("https://webpaypaymentgatewaystage.svea.com/webpay-admin/admin/merchantresponsetest.xhtml")
             ->getPaymentForm();
 
 //    print_r( $request->xmlMessage );
@@ -146,7 +146,7 @@ class FixedDiscountVatCalculationTest extends PHPUnit_Framework_TestCase
                 ->setDiscountId("fixedDiscount2")
                 ->setName("-20i*1")
         );
-        $request = $order->usePaymentMethod(PaymentMethod::KORTCERT)->setReturnUrl("https://test.sveaekonomi.se/webpay-admin/admin/merchantresponsetest.xhtml");
+        $request = $order->usePaymentMethod(PaymentMethod::KORTCERT)->setReturnUrl("https://webpaypaymentgatewaystage.svea.com/webpay-admin/admin/merchantresponsetest.xhtml");
         $request = $request->getPaymentForm();
 
 //    print_r( $request->xmlMessage );

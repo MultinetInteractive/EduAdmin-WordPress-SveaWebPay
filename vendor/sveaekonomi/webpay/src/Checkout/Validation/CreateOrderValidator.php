@@ -31,6 +31,46 @@ class CreateOrderValidator extends OrderValidator
 
         $errors = $this->validateMerchantSettings($order, $errors);
 
+        $errors = $this->validatePartnerKey($order, $errors);
+
+        $errors = $this->validateIdentityFlags($order, $errors);
+
+        $errors = $this->validateRequireElectronicIdAuthentication($order, $errors);
+
+        return $errors;
+    }
+
+    /**
+     * @param CheckoutOrderBuilder $order
+     * @param array $errors
+     * @return array
+     */
+    private function validateRequireElectronicIdAuthentication($order, $errors)
+    {
+        if($order->getRequireElectronicIdAuthentication() != null)
+        {
+            if(!is_bool($order->getRequireElectronicIdAuthentication()))
+            {
+                $errors['invalid type'] = "requireElectronicIdAuthentication field isn't a boolean type, use setRequireElectronicIdAuthentication(true)";
+            }
+        }
+        return $errors;
+    }
+
+    /**
+     * @param CheckoutOrderBuilder $order
+     * @param array $errors
+     * @return array
+     */
+    private function validatePartnerKey($order, $errors)
+    {
+        $guid = $order->getPartnerKey();
+        if($guid != null)
+        {
+            if (!preg_match('/^\{?[A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12}\}?$/', $guid)) {
+                $errors['invalidFormatPartnerKey'] = "partnerKey is not in guid-format. The partnerKey is provided by Svea. If you're a partner to Svea and wish to use the partnerKey, please contact Svea in order to receive a guid.";
+            }
+        }
         return $errors;
     }
 
@@ -48,14 +88,13 @@ class CreateOrderValidator extends OrderValidator
             $errors['incorrectCountryCode'] = "countryCode must be defined, and string of alphabetic characters";
         }
 
-        if ($order->currency === null ||
-            !ctype_alpha($order->currency) ||
-            count($order->currency) === 0
+        if (isset($order->currency) === false ||
+            !ctype_alpha($order->currency)
         ) {
             $errors['incorrectCurrency'] = "currency must be defined, and must be string of alphabetic characters";
         }
 
-        if ($order->getLocale() === null || count($order->getLocale()) === 0) {
+        if ($order->getLocale() === null) {
             $errors['incorrectLocale'] = "locale must be defined";
         }
         
@@ -84,6 +123,19 @@ class CreateOrderValidator extends OrderValidator
     {
         $errors = parent::validateOrderRows($order, $errors);
         $errors = $this->validateCheckoutOrderRows($order, $errors);
+
+        return $errors;
+    }
+
+    /**
+     * @param CheckoutOrderBuilder $order
+     * @param array $errors
+     * @return array
+     */
+    private function validateIdentityFlags($order, $errors)
+    {
+        $identityFlagValidator = new IdentityFlagValidator();
+        $errors = $identityFlagValidator->validate($order->getIdentityFlags(), $errors);
 
         return $errors;
     }

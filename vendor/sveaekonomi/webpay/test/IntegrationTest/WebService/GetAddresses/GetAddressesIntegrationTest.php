@@ -3,7 +3,7 @@
 
 namespace Svea\WebPay\Test\IntegrationTest\WebService\GetAddress;
 
-use PHPUnit_Framework_TestCase;
+use \PHPUnit\Framework\TestCase;
 use Svea\WebPay\Config\ConfigurationService;
 use Svea\WebPay\WebService\GetAddress\GetAddresses as GetAddresses;
 
@@ -11,7 +11,7 @@ use Svea\WebPay\WebService\GetAddress\GetAddresses as GetAddresses;
 /**
  * @author Jonas Lith, Kristian Grossman-Madsen
  */
-class GetAddressesIntegrationTest extends PHPUnit_Framework_TestCase
+class GetAddressesIntegrationTest extends \PHPUnit\Framework\TestCase
 {
 
     private $config;
@@ -104,11 +104,11 @@ class GetAddressesIntegrationTest extends PHPUnit_Framework_TestCase
 
         $this->assertEquals(1, $request->accepted);
         $this->assertEquals('Accepted', $request->resultcode);
-        $this->assertEquals('5F445B19E8C87954904FB7531A51AEE57C5E9413', $request->customerIdentity[0]->addressSelector);
+        $this->assertEquals('7d97a7f100744f419607fb654202cdc9', $request->customerIdentity[0]->addressSelector);
         $this->assertEquals('Person', $request->customerIdentity[0]->customerType);
-        $this->assertEquals('08 - 111 111 11', $request->customerIdentity[0]->phoneNumber);
-        $this->assertEquals('Persson, Tess T', $request->customerIdentity[0]->fullName);
-        $this->assertEquals('Tess T', $request->customerIdentity[0]->firstName);
+        $this->assertEquals('+46811111111', $request->customerIdentity[0]->phoneNumber);
+        $this->assertEquals('Persson Tess T', $request->customerIdentity[0]->fullName);
+        $this->assertEquals('Tess', $request->customerIdentity[0]->firstName);
         $this->assertEquals('Persson', $request->customerIdentity[0]->lastName);
         $this->assertEquals('Testgatan 1', $request->customerIdentity[0]->street);
         $this->assertEquals('c/o Eriksson, Erik', $request->customerIdentity[0]->coAddress);
@@ -298,4 +298,15 @@ class GetAddressesIntegrationTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(0, $request->accepted);
         $this->assertEquals('Error', $request->resultcode);
     }
+
+    public function test_GetAddresses_checkAndSetConfiguredPaymentMethod_Accepted()
+    {
+        $request =$this->addressRequest
+            ->setCountryCode("SE")
+            ->setCustomerIdentifier("4605092222")
+            ->getIndividualAddresses()
+            ->doRequest();
+        $this->assertEquals(1,$request->accepted);
+    }
+
 }

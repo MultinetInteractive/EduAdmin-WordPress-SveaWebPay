@@ -2,7 +2,7 @@
 
 namespace Svea\WebPay\Test\IntegrationTest\AdminService;
 
-use PHPUnit_Framework_TestCase;
+use \PHPUnit\Framework\TestCase;
 use Svea\WebPay\Config\ConfigurationService;
 use Svea\WebPay\Constant\DistributionType;
 use Svea\WebPay\HostedService\HostedAdminRequest\ConfirmTransaction;
@@ -14,7 +14,7 @@ use Svea\WebPay\WebPayItem;
 /**
  * @author Kristian Grossman-Madsen for Svea Webpay
  */
-class DeliverOrderRowsRequestIntegrationTest extends PHPUnit_Framework_TestCase
+class DeliverOrderRowsRequestIntegrationTest extends \PHPUnit\Framework\TestCase
 {
 
     public function test_deliver_single_invoice_orderRow_returns_accepted_with_invoiceId()
@@ -153,11 +153,11 @@ class DeliverOrderRowsRequestIntegrationTest extends PHPUnit_Framework_TestCase
             'test_manual_query_card_queryTransaction_returntype'
         );
 
-        // 1. go to https://test.sveaekonomi.se/webpay-admin/admin/start.xhtml 
+        // 1. go to https://webpaypaymentgatewaystage.svea.com/webpay-admin/admin/start.xhtml
         // 2. go to verktyg -> betalning
         // 3. enter our test merchantid: 1130
         // 4. use the following xml, making sure to update to a unique customerrefno:
-        //<paymentmethod>KORTCERT</paymentmethod><currency>EUR</currency><amount>600</amount><vat>120</vat><customerrefno>test_14105300920232</customerrefno><returnurl>https://test.sveaekonomi.se/webpay-admin/admin/merchantresponsetest.xhtml</returnurl><orderrows><row><name>A</name><amount>100</amount><vat>20</vat><description>rowA</description><quantity>1</quantity><sku>665</sku><unit>st</unit></row><row><name>B</name><amount>200</amount><vat>40</vat><description>rowB</description><quantity>1</quantity><sku>666</sku><unit>st</unit></row><row><name>C</name><amount>300</amount><vat>60</vat><description>rowA</description><quantity>1</quantity><sku>667</sku><unit>st</unit></row></orderrows>
+        //<paymentmethod>KORTCERT</paymentmethod><currency>EUR</currency><amount>600</amount><vat>120</vat><customerrefno>test_14105300920232</customerrefno><returnurl>https://webpaypaymentgatewaystage.svea.com/webpay-admin/admin/merchantresponsetest.xhtml</returnurl><orderrows><row><name>A</name><amount>100</amount><vat>20</vat><description>rowA</description><quantity>1</quantity><sku>665</sku><unit>st</unit></row><row><name>B</name><amount>200</amount><vat>40</vat><description>rowB</description><quantity>1</quantity><sku>666</sku><unit>st</unit></row><row><name>C</name><amount>300</amount><vat>60</vat><description>rowA</description><quantity>1</quantity><sku>667</sku><unit>st</unit></row></orderrows>
         // 5. the result should be:
         //<response>
         //  <transaction id="586209">
@@ -217,11 +217,11 @@ class DeliverOrderRowsRequestIntegrationTest extends PHPUnit_Framework_TestCase
             'test_manual_deliver_single_card_orderRow_of_manipulated_order_returns_error'
         );
 
-        // 1. go to https://test.sveaekonomi.se/webpay-admin/admin/start.xhtml 
+        // 1. go to https://webpaypaymentgatewaystage.svea.com/webpay-admin/admin/start.xhtml
         // 2. go to verktyg -> betalning
         // 3. enter our test merchantid: 1130
         // 4. use the following xml, making sure to update to a unique customerrefno:
-        //<paymentmethod>KORTCERT</paymentmethod><currency>EUR</currency><amount>600</amount><vat>120</vat><customerrefno>test_14105300920232</customerrefno><returnurl>https://test.sveaekonomi.se/webpay-admin/admin/merchantresponsetest.xhtml</returnurl><orderrows><row><name>A</name><amount>100</amount><vat>20</vat><description>rowA</description><quantity>1</quantity><sku>665</sku><unit>st</unit></row><row><name>B</name><amount>200</amount><vat>40</vat><description>rowB</description><quantity>1</quantity><sku>666</sku><unit>st</unit></row><row><name>C</name><amount>300</amount><vat>60</vat><description>rowA</description><quantity>1</quantity><sku>667</sku><unit>st</unit></row></orderrows>
+        //<paymentmethod>KORTCERT</paymentmethod><currency>EUR</currency><amount>600</amount><vat>120</vat><customerrefno>test_14105300920232</customerrefno><returnurl>https://webpaypaymentgatewaystage.svea.com/webpay-admin/admin/merchantresponsetest.xhtml</returnurl><orderrows><row><name>A</name><amount>100</amount><vat>20</vat><description>rowA</description><quantity>1</quantity><sku>665</sku><unit>st</unit></row><row><name>B</name><amount>200</amount><vat>40</vat><description>rowB</description><quantity>1</quantity><sku>666</sku><unit>st</unit></row><row><name>C</name><amount>300</amount><vat>60</vat><description>rowA</description><quantity>1</quantity><sku>667</sku><unit>st</unit></row></orderrows>
         // 5. the result should be:
         //<response>
         //  <transaction id="586209">
@@ -283,11 +283,11 @@ class DeliverOrderRowsRequestIntegrationTest extends PHPUnit_Framework_TestCase
             'test_manual_deliver_single_card_orderRow_of_confirmed_order_performs_loweramount_and_returns_ConfirmTransactionError'
         );
 
-        // 1. go to https://test.sveaekonomi.se/webpay-admin/admin/start.xhtml 
+        // 1. go to https://webpaypaymentgatewaystage.svea.com/webpay-admin/admin/start.xhtml
         // 2. go to verktyg -> betalning
         // 3. enter our test merchantid: 1130
         // 4. use the following xml, making sure to update to a unique customerrefno:
-        //<paymentmethod>KORTCERT</paymentmethod><currency>EUR</currency><amount>600</amount><vat>120</vat><customerrefno>test_14105300920232</customerrefno><returnurl>https://test.sveaekonomi.se/webpay-admin/admin/merchantresponsetest.xhtml</returnurl><orderrows><row><name>A</name><amount>100</amount><vat>20</vat><description>rowA</description><quantity>1</quantity><sku>665</sku><unit>st</unit></row><row><name>B</name><amount>200</amount><vat>40</vat><description>rowB</description><quantity>1</quantity><sku>666</sku><unit>st</unit></row><row><name>C</name><amount>300</amount><vat>60</vat><description>rowA</description><quantity>1</quantity><sku>667</sku><unit>st</unit></row></orderrows>
+        //<paymentmethod>KORTCERT</paymentmethod><currency>EUR</currency><amount>600</amount><vat>120</vat><customerrefno>test_14105300920232</customerrefno><returnurl>https://webpaypaymentgatewaystage.svea.com/webpay-admin/admin/merchantresponsetest.xhtml</returnurl><orderrows><row><name>A</name><amount>100</amount><vat>20</vat><description>rowA</description><quantity>1</quantity><sku>665</sku><unit>st</unit></row><row><name>B</name><amount>200</amount><vat>40</vat><description>rowB</description><quantity>1</quantity><sku>666</sku><unit>st</unit></row><row><name>C</name><amount>300</amount><vat>60</vat><description>rowA</description><quantity>1</quantity><sku>667</sku><unit>st</unit></row></orderrows>
         // 5. the result should be:
         //<response>
         //  <transaction id="586209">

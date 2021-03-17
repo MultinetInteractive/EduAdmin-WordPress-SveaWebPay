@@ -2,7 +2,7 @@
 namespace Composer\Installers;
 
 use Composer\DependencyResolver\Pool;
-use Composer\Package\PackageInterface;
+use Composer\Semver\Constraint\Constraint;
 
 class CakePHPInstaller extends BaseInstaller
 {
@@ -31,6 +31,17 @@ class CakePHPInstaller extends BaseInstaller
     }
 
     /**
+     * Change the default plugin location when cakephp >= 3.0
+     */
+    public function getLocations()
+    {
+        if ($this->matchesCakeVersion('>=', '3.0.0')) {
+            $this->locations['plugin'] =  $this->composer->getConfig()->get('vendor-dir') . '/{$vendor}/{$name}/';
+        }
+        return $this->locations;
+    }
+
+    /**
      * Check if CakePHP version matches against a version
      *
      * @param string $matcher
@@ -39,45 +50,16 @@ class CakePHPInstaller extends BaseInstaller
      */
     protected function matchesCakeVersion($matcher, $version)
     {
-        if (class_exists('Composer\Semver\Constraint\MultiConstraint')) {
-            $multiClass = 'Composer\Semver\Constraint\MultiConstraint';
-            $constraintClass = 'Composer\Semver\Constraint\Constraint';
-        } else {
-            $multiClass = 'Composer\Package\LinkConstraint\MultiConstraint';
-            $constraintClass = 'Composer\Package\LinkConstraint\VersionConstraint';
-        }
-
         $repositoryManager = $this->composer->getRepositoryManager();
-        if ($repositoryManager) {
-            $repos = $repositoryManager->getLocalRepository();
-            if (!$repos) {
-                return false;
-            }
-            $cake3 = new $multiClass(array(
-                new $constraintClass($matcher, $version),
-                new $constraintClass('!=', '9999999-dev'),
-            ));
-            $pool = new Pool('dev');
-            $pool->addRepository($repos);
-            $packages = $pool->whatProvides('cakephp/cakephp');
-            foreach ($packages as $package) {
-                $installed = new $constraintClass('=', $package->getVersion());
-                if ($cake3->matches($installed)) {
-                    return true;
-                }
-            }
+        if (! $repositoryManager) {
+            return false;
         }
-        return false;
+
+        $repos = $repositoryManager->getLocalRepository();
+        if (!$repos) {
+            return false;
+        }
+
+        return $repos->findPackage('cakephp/cakephp', new Constraint($matcher, $version)) !== null;
     }
-
-	/**
-	 * Change the default plugin location when cakephp >= 3.0
-	 */
-	public function getLocations() {
-		if ( $this->matchesCakeVersion( '>=', '3.0.0' ) ) {
-			$this->locations['plugin'] = $this->composer->getConfig()->get( 'vendor-dir' ) . '/{$vendor}/{$name}/';
-		}
-
-		return $this->locations;
-	}
 }

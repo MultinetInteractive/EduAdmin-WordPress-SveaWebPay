@@ -9,11 +9,54 @@ use Svea\WebPay\Checkout\Validation\ExVatRestrictionValidator;
  * that all required fields are present and of the correct type. Errors found
  * are returned as associative type-message pairs in an error array.
  *
- * @author Anneli Halld'n, Daniel Brolund, Kristian Grossman-Madsen for Svea Webpay
+ * @author Anneli Halld'n, Daniel Brolund, Kristian Grossman-Madsen, Fredrik Sundell for Svea Webpay
  */
 abstract class OrderValidator
 {
     public abstract function validate($order);
+
+    /**
+     * @param type $order
+     * @param type $errors
+     * @return type $errors
+     */
+    public function validatePeppolId($order, $errors)
+    {
+        if (isset($order->peppolId)) {
+
+            if($this->isCompany == false)
+            {
+                $errors['incorrect value'] = "CustomerType must be a company when using PeppolId.";
+            }
+
+            if(is_numeric(substr($order->peppolId,0,4)) == false )
+            {
+                $errors['incorrect value'] = "First 4 characters of PeppolId must be numeric.";
+            }
+
+            if(ctype_alnum(substr($order->peppolId,6)) == false)
+            {
+                $errors['incorrect value'] = "All characters after the fifth character in PeppolId must be alphanumeric.";
+            }
+
+            if(substr($order->peppolId,4,1) != ":")
+            {
+                $errors['incorrect value'] = "The fifth character of PeppolId must be \":\".";
+            }
+
+            if(strlen($order->peppolId) > 55)
+            {
+                $errors['incorrect value'] = "PeppolId is too long, must be 55 characters or fewer.";
+            }
+
+            if(strlen($order->peppolId) < 6)
+            {
+                $errors['incorrect value'] = "PeppolId is too short, must be 6 characters or longer.";
+            }
+        }
+
+        return $errors;
+    }
 
     /*
      * @param type $order
@@ -62,8 +105,8 @@ abstract class OrderValidator
                 if (isset($row->articleNumber) && !is_string($row->articleNumber))
                     $errors['incorrect datatype'] = 'articleNumber is not of type string.';
 
-                if (isset($row->quantity) && !(is_int($row->quantity) || is_float($row->quantity)))
-                    $errors['incorrect datatype'] = "quantity is not numeric, set as integer or float.";
+                if (isset($row->quantity) && !(is_numeric($row->quantity)))
+                    $errors['incorrect datatype'] = "quantity is not numeric.";
 
                 if (isset($row->unit) && !is_string($row->unit))
                     $errors['incorrect datatype'] = 'unit is not of type string.';
@@ -127,14 +170,58 @@ abstract class OrderValidator
      * @return array
      */
     protected function validateOrderId(CheckoutOrderBuilder $order, $errors)
-    {
-        if (!is_numeric($order->getId()) || !is_int($order->getId())) {
-            $errors['incorrect OrderId'] = "orderId can't be empty and must be int";
-        }
+{
+    if (!is_numeric($order->getId()) || !is_int($order->getId())) {
+        $errors['incorrect OrderId'] = "orderId can't be empty and must be int";
+    }
 
+    return $errors;
+}
+
+    /**
+     * @param CheckoutOrderBuilder $request
+     * @param array $errors
+     * @return array
+     */
+    protected function validatePresetIsCompanyIsBoolean($request, $errors)
+    {
+        if (count($request->getPresetValues()) > 0) {
+            foreach ($request->getPresetValues() as $presetValue) {
+                if(strtolower($presetValue->getTypeName()) == 'iscompany')
+                {
+                    if(!is_bool($presetValue->getValue()))
+                    {
+                        $errors['incorrect type'] = "isCompany must be of type boolean";
+                    }
+                }
+            }
+        }
         return $errors;
     }
 
+    /**
+     * @param CheckoutOrderBuilder $request
+     * @param array $errors
+     * @return array
+     */
+    protected function validatePresetIsCompanyIsSet($request, $errors)
+    {
+        if(count($request->getPresetValues()) == 0)
+        {
+            $errors['missing value'] = "isCompany presetValue is not set";
+        }
+        else
+        {
+            foreach ($request->getPresetValues() as $presetValue) {
+                if (strtolower($presetValue->getTypeName()) == 'iscompany') {
+                    if ($presetValue->getValue() === null) {
+                        $errors['missing value'] = "isCompany value is null";
+                    }
+                }
+            }
+        }
+        return $errors;
+    }
 
     /**
      * @param CheckoutOrderBuilder $order

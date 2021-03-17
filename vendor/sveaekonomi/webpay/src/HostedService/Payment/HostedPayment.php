@@ -219,7 +219,7 @@ class HostedPayment
     public function validateOrder()
     {
         $validator = new HostedOrderValidator();
-        $errors = $validator->validate($this->order);
+        $errors = $validator->validate($this);
         if (($this->order->countryCode == "NL" || $this->order->countryCode == "DE") && isset($this->paymentMethod)) {
             if (isset($this->paymentMethod) &&
                 ($this->paymentMethod == PaymentMethod::INVOICE || $this->paymentMethod == PaymentMethod::PAYMENTPLAN)
@@ -264,6 +264,11 @@ class HostedPayment
             $this->request['subscriptionId'] = $this->subscriptionId;
         }
 
+        if (isset($this->order->payerAlias)) // used by Swish
+        {
+            $this->request['payerAlias'] = $this->order->payerAlias;
+        }
+
         return $this->request;
     }
 
@@ -281,8 +286,8 @@ class HostedPayment
      * [errormessage] =>
      * [id] => //the order id
      * [created]
-     * [url] => https://webpay.sveaekonomi.se/webpay/preparedpayment/xxxxx Will return test or prod url depending on where the order was created
-     * [testurl] => https://test.sveaekonomi.se/webpay/preparedpayment/xxxxx Deprecated! Not valid if the order is created in prod.
+     * [url] => https://webpaypaymentgateway.svea.com/webpay/preparedpayment/xxxxx Will return test or prod url depending on where the order was created
+     * [testurl] => https://webpaypaymentgatewaystage.svea.com/webpay/preparedpayment/xxxxx Deprecated! Not valid if the order is created in prod.
      * @throws ValidationException
      */
     public function getPaymentUrl()

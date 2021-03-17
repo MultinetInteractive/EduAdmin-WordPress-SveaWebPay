@@ -7,16 +7,91 @@ use Svea\WebPay\WebPay;
 use Svea\WebPay\WebPayItem;
 use Svea\WebPay\WebPayAdmin;
 use Svea\WebPay\Test\TestUtil;
-use PHPUnit_Framework_TestCase;
+use \PHPUnit\Framework\TestCase;
 use Svea\WebPay\Config\ConfigurationService;
 use Svea\WebPay\WebService\WebServiceResponse\CustomerIdentity\CreateOrderIdentity;
 
-
 /**
- * @author Anneli Halld'n, Daniel Brolund, Kristian Grossman-Madsen for Svea Webpay
+ * @author Anneli Halld'n, Daniel Brolund, Kristian Grossman-Madsen, Fredrik Sundell for Svea Webpay
  */
-class InvoicePaymentIntegrationTest extends PHPUnit_Framework_TestCase
+class InvoicePaymentIntegrationTest extends \PHPUnit\Framework\TestCase
 {
+
+    // order with order/fee rows mixed exvat+vat / incvat+vat should be sent with PriceIncludingVat = false
+    public function test_mixed_order_row_and_shipping_fees_only_has_priceIncludingVat_false()
+    {
+        $order = $order = WebPay::createOrder(ConfigurationService::getDefaultConfig())
+            ->addCustomerDetails(WebPayItem::individualCustomer()->setNationalIdNumber(194605092222))
+            ->setCountryCode("SE")
+            ->setCustomerReference("33")
+            ->setOrderDate("2012-12-12")
+            ->setCurrency("SEK")
+            ->addOrderRow(
+                WebPayItem::orderRow()
+                    ->setAmountExVat(60.00)
+                    ->setVatPercent(20)
+                    ->setQuantity(1)
+                    ->setName("exvatRow")
+            )
+            ->addOrderRow(
+                WebPayItem::orderRow()
+                    ->setAmountIncVat(33.00)
+                    ->setVatPercent(10)
+                    ->setQuantity(1)
+                    ->setName("incvatRow")
+            )
+            ->addFee(
+                WebPayItem::invoiceFee()
+                    ->setAmountIncVat(8.80)
+                    ->setVatPercent(10)
+                    ->setName("incvatInvoiceFee")
+            )
+            ->addFee(
+                WebPayItem::shippingFee()
+                    ->setAmountExVat(16.00)
+                    ->setVatPercent(10)
+                    ->setName("exvatShippingFee")
+            );
+
+        $request = $order->useInvoicePayment()->prepareRequest();
+        // all order rows
+        $this->assertEquals(60.00, $request->request->CreateOrderInformation->OrderRows['OrderRow'][0]->PricePerUnit);
+        $this->assertEquals(20, $request->request->CreateOrderInformation->OrderRows['OrderRow'][0]->VatPercent);
+        $this->assertEquals(false, $request->request->CreateOrderInformation->OrderRows['OrderRow'][0]->PriceIncludingVat);
+        $this->assertEquals(30.00, $request->request->CreateOrderInformation->OrderRows['OrderRow'][1]->PricePerUnit);
+        $this->assertEquals(10, $request->request->CreateOrderInformation->OrderRows['OrderRow'][1]->VatPercent);
+        $this->assertEquals(false, $request->request->CreateOrderInformation->OrderRows['OrderRow'][1]->PriceIncludingVat);
+        // all invoice fee rows
+        $this->assertEquals(8.00, $request->request->CreateOrderInformation->OrderRows['OrderRow'][2]->PricePerUnit);
+        $this->assertEquals(10, $request->request->CreateOrderInformation->OrderRows['OrderRow'][2]->VatPercent);
+        $this->assertEquals(false, $request->request->CreateOrderInformation->OrderRows['OrderRow'][2]->PriceIncludingVat);
+        // all shipping fee rows
+        $this->assertEquals(16.00, $request->request->CreateOrderInformation->OrderRows['OrderRow'][3]->PricePerUnit);
+        $this->assertEquals(10, $request->request->CreateOrderInformation->OrderRows['OrderRow'][3]->VatPercent);
+        $this->assertEquals(false, $request->request->CreateOrderInformation->OrderRows['OrderRow'][3]->PriceIncludingVat);
+
+        // check that service accepts order
+        $response = $order->useInvoicePayment()->doRequest();
+        $this->assertEquals(true, $response->accepted);
+        $this->assertEquals("131.4", $response->amount);
+    }
+
+    public function testInvoiceRequestwithPeppolId()
+    {
+        $config = ConfigurationService::getDefaultConfig();
+        $request = WebPay::createOrder($config)
+            ->addOrderRow(TestUtil::createOrderRow())
+            ->addCustomerDetails(
+                WebPayItem::companyCustomer()
+                    ->setNationalIdNumber(194608142222))
+            ->setOrderDate("2019-04-01")
+            ->setCountryCode("SE")
+            ->setPeppolId("1234:asdf")
+            ->useInvoicePayment()
+            ->doRequest();
+
+        $this->assertEquals(1, $request->accepted);
+    }
 
     public function testInvoiceRequestAccepted()
     {
@@ -39,6 +114,8 @@ class InvoicePaymentIntegrationTest extends PHPUnit_Framework_TestCase
 
     public function testInvoiceRequestNLAcceptedWithDoubleHousenumber()
     {
+        $this->markTestIncomplete("NL flow not maintained by webpay-dev");
+
         $config = ConfigurationService::getDefaultConfig();
         $request = WebPay::createOrder($config)
             ->addOrderRow(TestUtil::createOrderRow())
@@ -64,6 +141,8 @@ class InvoicePaymentIntegrationTest extends PHPUnit_Framework_TestCase
 
     public function testInvoiceRequestUsingISO8601dateAccepted()
     {
+        $this->markTestIncomplete("NL flow not maintained by webpay-dev");
+
         $config = ConfigurationService::getDefaultConfig();
         $request = WebPay::createOrder($config)
             ->addOrderRow(TestUtil::createOrderRow())
@@ -176,7 +255,7 @@ class InvoicePaymentIntegrationTest extends PHPUnit_Framework_TestCase
     }
 
     /**
-     * NL vat rates are 6%, 21% (as of 131018, see http://www.government.nl/issues/taxation/vat-and-excise-duty)
+     * NL vat rates are 6%, 21% (as of 131018, see https://www.government.nl/topics/vat/vat-rates-and-exemptions)
      */
     public function t___estNLInvoicePaymentAcceptsVatRates()
     {
@@ -909,7 +988,7 @@ class InvoicePaymentIntegrationTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(1, $response->accepted);
         $this->assertTrue($response->customerIdentity instanceof CreateOrderIdentity);
         // verify returned address
-        $this->assertEquals("Persson, Tess T", $response->customerIdentity->fullName);    // Note: order may vary between countries, given by UC
+        $this->assertEquals("Persson Tess T", $response->customerIdentity->fullName);    // Note: order may vary between countries, given by UC
         $this->assertEquals("Testgatan 1", $response->customerIdentity->street);
         $this->assertEquals("c/o Eriksson, Erik", $response->customerIdentity->coAddress);
         $this->assertEquals("99999", $response->customerIdentity->zipCode);
@@ -938,10 +1017,10 @@ class InvoicePaymentIntegrationTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(1, $response->accepted);
         $this->assertTrue($response->customerIdentity instanceof CreateOrderIdentity);
         // verify returned address
-        $this->assertEquals("Normann Ola", $response->customerIdentity->fullName);    // Note: order may vary between countries, given by UC
+        $this->assertEquals("Ola Normann", $response->customerIdentity->fullName);    // Note: order may vary between countries, given by UC
         $this->assertEquals("Testveien 2", $response->customerIdentity->street);
         $this->assertEquals("", $response->customerIdentity->coAddress);
-        $this->assertEquals("359", $response->customerIdentity->zipCode);
+        $this->assertEquals("0359", $response->customerIdentity->zipCode);
         $this->assertEquals("Oslo", $response->customerIdentity->locality);
     }
 
@@ -967,11 +1046,11 @@ class InvoicePaymentIntegrationTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(1, $response->accepted);
         $this->assertTrue($response->customerIdentity instanceof CreateOrderIdentity);
         // verify returned address
-        $this->assertEquals("Jensen Hanne", $response->customerIdentity->fullName);    // Note: order may vary between countries, given by UC
+        $this->assertEquals("Hanne Jensen", $response->customerIdentity->fullName);    // Note: order may vary between countries, given by UC
         $this->assertEquals("Testvejen 42", $response->customerIdentity->street);
-        $this->assertEquals("c/o Test A/S", $response->customerIdentity->coAddress);
+        $this->assertEquals("c/o Test A/s", $response->customerIdentity->coAddress);
         $this->assertEquals("2100", $response->customerIdentity->zipCode);
-        $this->assertEquals("KØBENHVN Ø", $response->customerIdentity->locality);
+        $this->assertEquals("Københvn Ø", $response->customerIdentity->locality);
     }
 
     // FI
@@ -996,7 +1075,7 @@ class InvoicePaymentIntegrationTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(1, $response->accepted);
         $this->assertTrue($response->customerIdentity instanceof CreateOrderIdentity);
         // verify returned address
-        $this->assertEquals("Kanerva Haapakoski, Kukka-Maaria", $response->customerIdentity->fullName);    // Note: order may vary between countries, given by UC
+        $this->assertEquals("Kanerva Haapakoski Kukka-Maaria", $response->customerIdentity->fullName);    // Note: order may vary between countries, given by UC
         $this->assertEquals("Atomitie 2 C", $response->customerIdentity->street);
         $this->assertEquals("", $response->customerIdentity->coAddress);
         $this->assertEquals("00370", $response->customerIdentity->zipCode);
@@ -1007,12 +1086,15 @@ class InvoicePaymentIntegrationTest extends PHPUnit_Framework_TestCase
     // IndividualCustomer validation
     function test_validates_all_required_methods_for_createOrder_useInvoicePayment_IndividualCustomer_DE()
     {
+        $this->markTestIncomplete("NL flow not maintained by webpay-dev");
+
         $order = WebPay::createOrder(ConfigurationService::getDefaultConfig())
             ->addOrderRow(
                 WebPayItem::orderRow()
                     ->setQuantity(1.0)
                     ->setAmountExVat(4.0)
                     ->setAmountIncVat(5.0)
+                    ->setDescription("IntegrationTest")
             )
             ->addCustomerDetails(
                 WebPayItem::individualCustomer()
@@ -1041,12 +1123,15 @@ class InvoicePaymentIntegrationTest extends PHPUnit_Framework_TestCase
     // IndividualCustomer validation
     function test_validates_all_required_methods_for_createOrder_useInvoicePayment_IndividualCustomer_NL()
     {
+        $this->markTestIncomplete("NL flow not maintained by webpay-dev");
+
         $order = WebPay::createOrder(ConfigurationService::getDefaultConfig())
             ->addOrderRow(
                 WebPayItem::orderRow()
                     ->setQuantity(1.0)
                     ->setAmountExVat(4.0)
                     ->setAmountIncVat(5.0)
+                    ->setDescription("IntegrationTest")
             )
             ->addCustomerDetails(
                 WebPayItem::individualCustomer()
@@ -1074,6 +1159,8 @@ class InvoicePaymentIntegrationTest extends PHPUnit_Framework_TestCase
 
     public function testInvoiceRequestNLReturnsSameAddress()
     {
+        $this->markTestIncomplete("NL flow not maintained by webpay-dev");
+
         $config = ConfigurationService::getDefaultConfig();
         $request = WebPay::createOrder($config)
             ->addOrderRow(TestUtil::createOrderRow())
@@ -1105,6 +1192,8 @@ class InvoicePaymentIntegrationTest extends PHPUnit_Framework_TestCase
 
     public function testInvoiceRequestNLReturnsCorrectAddress()
     {
+        $this->markTestIncomplete("NL flow not maintained by webpay-dev");
+
         $config = ConfigurationService::getDefaultConfig();
         $request = WebPay::createOrder($config)
             ->addOrderRow(TestUtil::createOrderRow())
@@ -1191,6 +1280,8 @@ class InvoicePaymentIntegrationTest extends PHPUnit_Framework_TestCase
 
     public function testInvoiceRequestNLReproduceErrorIn471193()
     {
+        $this->markTestIncomplete("NL flow not maintained by webpay-dev");
+
         $config = ConfigurationService::getDefaultConfig();
         $request = WebPay::createOrder($config)
             ->addOrderRow(TestUtil::createOrderRow())
@@ -1380,7 +1471,7 @@ class InvoicePaymentIntegrationTest extends PHPUnit_Framework_TestCase
             ->setOrderDate("2012-12-12")
             ->useInvoicePayment()->doRequest();
         $this->assertEquals(1, $orderResponse->accepted);
-        $this->assertEquals("62.50", $orderResponse->amount);   // this is where
+        $this->assertEquals("62.5", $orderResponse->amount);   // this is where
 
         $query = WebPayAdmin::queryOrder($config)
             ->setCountryCode('SE')
@@ -1390,5 +1481,199 @@ class InvoicePaymentIntegrationTest extends PHPUnit_Framework_TestCase
         $this->assertEquals(125.00, $query->numberedOrderRows[0]->amountIncVat);
         $this->assertEquals(25.00, $query->numberedOrderRows[0]->vatPercent);
         $this->assertEquals(50.00, $query->numberedOrderRows[0]->discountPercent);
+    }
+
+    // fixed discount -- created discount rows should use incvat + vatpercent
+    /// fixed discount examples:
+    // single order rows vat rate
+    public function test_fixedDiscount_amount_with_incvat_vat_rate_creates_discount_rows_using_incvat_and_vatpercent()
+    {
+        $order = WebPay::createOrder(ConfigurationService::getDefaultConfig())
+            ->addCustomerDetails(WebPayItem::individualCustomer()->setNationalIdNumber(194605092222))
+            ->setCountryCode("SE")
+            ->setCustomerReference("33")
+            ->setOrderDate("2012-12-12")
+            ->setCurrency("SEK")
+            ->addOrderRow(
+                WebPayItem::orderRow()
+                    ->setAmountIncVat(72.00)
+                    ->setVatPercent(20)
+                    ->setQuantity(1)
+                    ->setName("incvatRow")
+            )
+            ->addOrderRow(
+                WebPayItem::orderRow()
+                    ->setAmountIncVat(33.00)
+                    ->setVatPercent(10)
+                    ->setQuantity(1)
+                    ->setName("incvatRow2")
+            )
+            ->addFee(
+                WebPayItem::invoiceFee()
+                    ->setAmountIncVat(8.80)
+                    ->setVatPercent(10)
+                    ->setName("incvatInvoiceFee")
+            )
+            ->addFee(
+                WebPayItem::shippingFee()
+                    ->setAmountIncVat(17.60)
+                    ->setVatPercent(10)
+                    ->setName("incvatShippingFee")
+            )
+            ->addDiscount(
+                WebPayItem::fixedDiscount()
+                    ->setAmountExVat(10.0)
+                    ->setVatPercent(10)
+                    ->setDiscountId("ElevenCrownsOff")
+                    ->setName("fixedDiscount: 10 @10% => 11kr")
+            );
+        $request = $order->useInvoicePayment()->prepareRequest();
+        // all order rows
+        $this->assertEquals(60.00, $request->request->CreateOrderInformation->OrderRows['OrderRow'][0]->PricePerUnit);
+        $this->assertEquals(20, $request->request->CreateOrderInformation->OrderRows['OrderRow'][0]->VatPercent);
+        $this->assertEquals(false, $request->request->CreateOrderInformation->OrderRows['OrderRow'][0]->PriceIncludingVat);
+        $this->assertEquals(30.00, $request->request->CreateOrderInformation->OrderRows['OrderRow'][1]->PricePerUnit);
+        $this->assertEquals(10, $request->request->CreateOrderInformation->OrderRows['OrderRow'][1]->VatPercent);
+        $this->assertEquals(false, $request->request->CreateOrderInformation->OrderRows['OrderRow'][1]->PriceIncludingVat);
+        // all invoice fee rows
+        $this->assertEquals(8.00, $request->request->CreateOrderInformation->OrderRows['OrderRow'][2]->PricePerUnit);
+        $this->assertEquals(10, $request->request->CreateOrderInformation->OrderRows['OrderRow'][2]->VatPercent);
+        $this->assertEquals(false, $request->request->CreateOrderInformation->OrderRows['OrderRow'][2]->PriceIncludingVat);
+        // all shipping fee rows
+        $this->assertEquals(16.00, $request->request->CreateOrderInformation->OrderRows['OrderRow'][3]->PricePerUnit);
+        $this->assertEquals(10, $request->request->CreateOrderInformation->OrderRows['OrderRow'][3]->VatPercent);
+        $this->assertEquals(false, $request->request->CreateOrderInformation->OrderRows['OrderRow'][3]->PriceIncludingVat);
+        // all discount rows
+        // expected: fixedDiscount: 10 @10% => 11kr, expressed as exvat + vat in request
+        $this->assertEquals(-10.00, $request->request->CreateOrderInformation->OrderRows['OrderRow'][4]->PricePerUnit);
+        $this->assertEquals(10, $request->request->CreateOrderInformation->OrderRows['OrderRow'][4]->VatPercent);
+        $this->assertEquals(false, $request->request->CreateOrderInformation->OrderRows['OrderRow'][4]->PriceIncludingVat);
+
+        // check that service accepts order
+        $response = $order->useInvoicePayment()->doRequest();
+        $this->assertEquals(true, $response->accepted);
+    }
+
+    // single order rows vat rate
+    public function test_fixedDiscount_amount_with_exvat_vat_rate_creates_discount_rows_using_incvat_and_vatpercent()
+    {
+        $order = WebPay::createOrder(ConfigurationService::getDefaultConfig())
+            ->addCustomerDetails(WebPayItem::individualCustomer()->setNationalIdNumber(194605092222))
+            ->setCountryCode("SE")
+            ->setCustomerReference("33")
+            ->setOrderDate("2012-12-12")
+            ->setCurrency("SEK")
+            ->addOrderRow(
+                WebPayItem::orderRow()
+                    ->setAmountExVat(60.00)
+                    ->setVatPercent(20)
+                    ->setQuantity(1)
+                    ->setName("exvatRow")
+            )
+            ->addOrderRow(
+                WebPayItem::orderRow()
+                    ->setAmountExVat(30.00)
+                    ->setVatPercent(10)
+                    ->setQuantity(1)
+                    ->setName("exvatRow2")
+            )
+            ->addFee(
+                WebPayItem::invoiceFee()
+                    ->setAmountExVat(8.00)
+                    ->setVatPercent(10)
+                    ->setName("exvatInvoiceFee")
+            )
+            ->addFee(
+                WebPayItem::shippingFee()
+                    ->setAmountExVat(16.00)
+                    ->setVatPercent(10)
+                    ->setName("exvatShippingFee")
+            )
+            ->addDiscount(
+                WebPayItem::fixedDiscount()
+                    ->setAmountExVat(10.0)
+                    ->setVatPercent(10)
+                    ->setDiscountId("ElevenCrownsOff")
+                    ->setName("fixedDiscount: 10 @10% => 11kr")
+            );
+        $request = $order->useInvoicePayment()->prepareRequest();
+        // all order rows
+        $this->assertEquals(60.00, $request->request->CreateOrderInformation->OrderRows['OrderRow'][0]->PricePerUnit);
+        $this->assertEquals(20, $request->request->CreateOrderInformation->OrderRows['OrderRow'][0]->VatPercent);
+        $this->assertEquals(false, $request->request->CreateOrderInformation->OrderRows['OrderRow'][0]->PriceIncludingVat);
+
+        // all discount rows
+        // expected: fixedDiscount: 10 @10% => 11kr, expressed as exvat + vat in request
+        $this->assertEquals(-10.00, $request->request->CreateOrderInformation->OrderRows['OrderRow'][4]->PricePerUnit);
+        $this->assertEquals(10, $request->request->CreateOrderInformation->OrderRows['OrderRow'][4]->VatPercent);
+        $this->assertEquals(false, $request->request->CreateOrderInformation->OrderRows['OrderRow'][4]->PriceIncludingVat);
+
+        $response = $order->useInvoicePayment()->doRequest();
+        $this->assertEquals(true, $response->accepted);
+    }
+
+    public function testOrderAndFixedDiscountSetWithMixedVat()
+    {
+        $config = ConfigurationService::getDefaultConfig();
+        $order = WebPay::createOrder($config)
+            ->addOrderRow(
+                WebPayItem::orderRow()
+                    ->setAmountIncVat(123.9876)
+                    ->setVatPercent(24)
+                    ->setQuantity(1)
+            )
+            ->addDiscount(WebPayItem::fixedDiscount()
+                ->setAmountExVat(9.999)
+            )
+            ->addCustomerDetails(TestUtil::createIndividualCustomer("SE"))
+            ->setCountryCode("SE")
+            ->setOrderDate("2012-12-12");
+
+        $request = $order->useInvoicePayment()->prepareRequest();
+
+        $this->assertEquals(99.99, $request->request->CreateOrderInformation->OrderRows['OrderRow'][0]->PricePerUnit);
+        $this->assertEquals(24, $request->request->CreateOrderInformation->OrderRows['OrderRow'][0]->VatPercent);
+        $this->assertFalse($request->request->CreateOrderInformation->OrderRows['OrderRow'][0]->PriceIncludingVat);
+
+        // 9.999 *1.24 = 12.39876
+        $this->assertEquals(-9.999, $request->request->CreateOrderInformation->OrderRows['OrderRow'][1]->PricePerUnit);
+        $this->assertEquals(24, $request->request->CreateOrderInformation->OrderRows['OrderRow'][1]->VatPercent);
+        $this->assertFalse($request->request->CreateOrderInformation->OrderRows['OrderRow'][1]->PriceIncludingVat);
+
+        // check that service accepts order
+        $response = $order->useInvoicePayment()->doRequest();
+        $this->assertEquals(true, $response->accepted);
+    }
+
+    public function testOrderAndFixedDiscountSetWithMixedVat3()
+    {
+        $config = ConfigurationService::getDefaultConfig();
+        $order = WebPay::createOrder($config)
+            ->addOrderRow(
+                WebPayItem::orderRow()
+                    ->setAmountIncVat(123.9876)
+                    ->setAmountExVat(99.99)
+                    ->setQuantity(1)
+            )
+            ->addDiscount(WebPayItem::fixedDiscount()
+                ->setAmountExVat(9.999)
+            )
+            ->addCustomerDetails(TestUtil::createIndividualCustomer("SE"))
+            ->setCountryCode("SE")
+            ->setOrderDate("2012-12-12");
+        $request = $order->useInvoicePayment()->prepareRequest();
+
+        $this->assertEquals(99.99, $request->request->CreateOrderInformation->OrderRows['OrderRow'][0]->PricePerUnit);
+        $this->assertEquals(24, $request->request->CreateOrderInformation->OrderRows['OrderRow'][0]->VatPercent);
+        $this->assertFalse($request->request->CreateOrderInformation->OrderRows['OrderRow'][0]->PriceIncludingVat);
+
+        // 9.999 *1.24 = 12.39876
+        $this->assertEquals(-9.999, $request->request->CreateOrderInformation->OrderRows['OrderRow'][1]->PricePerUnit);
+        $this->assertEquals(24, $request->request->CreateOrderInformation->OrderRows['OrderRow'][1]->VatPercent);
+        $this->assertFalse($request->request->CreateOrderInformation->OrderRows['OrderRow'][1]->PriceIncludingVat);
+
+        // check that service accepts order
+        $response = $order->useInvoicePayment()->doRequest();
+        $this->assertEquals(true, $response->accepted);
     }
 }

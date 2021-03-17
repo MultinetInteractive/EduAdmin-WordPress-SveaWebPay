@@ -75,16 +75,14 @@ class ResponseHandler
             $errorMessage = 'Undefined error occurred.';
             $errorCode = null;
 
-            if (!empty($this->body)) {
+            if (!empty($this->body) && ($this->body != "null")) {
                 $errorContent = $this->getContent();
                 if (isset($errorContent['Code'])) {
                     $errorCode = $errorContent['Code'];
                 }
-
                 if (isset($errorContent['Message'])) {
                     $errorMessage = $errorContent['Message'];
                 }
-
                 if (isset($errorContent['Errors']) && is_array($errorContent['Errors'])) {
                     $error = $errorContent['Errors'][0];
                     $errorMessage = $error['ErrorMessage'];
@@ -206,12 +204,18 @@ class ResponseHandler
      */
     public function getContent()
     {
-        $result = json_decode($this->body, true);
-
+        $result = json_decode($this->removeBOM($this->body), true);
         if ($result === null && $this->body !== '') {
             throw new SveaApiException('Response format is not valid, JSON decode error', 1000);
         }
 
         return $result;
+    }
+
+    private function removeBOM($data) {
+        if (0 === strpos(bin2hex($data), 'efbbbf')) {
+            return substr($data, 3);
+        }
+        return $data;
     }
 }

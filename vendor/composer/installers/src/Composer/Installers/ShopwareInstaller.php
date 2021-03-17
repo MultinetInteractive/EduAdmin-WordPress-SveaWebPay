@@ -8,12 +8,12 @@ namespace Composer\Installers;
 class ShopwareInstaller extends BaseInstaller
 {
     protected $locations = array(
-	    'backend-plugin'  => 'engine/Shopware/Plugins/Local/Backend/{$name}/',
-	    'core-plugin'     => 'engine/Shopware/Plugins/Local/Core/{$name}/',
-	    'frontend-plugin' => 'engine/Shopware/Plugins/Local/Frontend/{$name}/',
-	    'theme'           => 'templates/{$name}/',
-	    'plugin'          => 'custom/plugins/{$name}/',
-	    'frontend-theme'  => 'themes/Frontend/{$name}/',
+        'backend-plugin'    => 'engine/Shopware/Plugins/Local/Backend/{$name}/',
+        'core-plugin'       => 'engine/Shopware/Plugins/Local/Core/{$name}/',
+        'frontend-plugin'   => 'engine/Shopware/Plugins/Local/Frontend/{$name}/',
+        'theme'             => 'templates/{$name}/',
+        'plugin'            => 'custom/plugins/{$name}/',
+        'frontend-theme'    => 'themes/Frontend/{$name}/',
     );
 
     /**
@@ -25,23 +25,10 @@ class ShopwareInstaller extends BaseInstaller
     {
         if ($vars['type'] === 'shopware-theme') {
             return $this->correctThemeName($vars);
-        } else {
-            return $this->correctPluginName($vars);
         }
+
+        return $this->correctPluginName($vars);        
     }
-
-	/**
-	 * Changes the name to a underscore separated name
-	 *
-	 * @param  array $vars
-	 *
-	 * @return array
-	 */
-	private function correctThemeName( $vars ) {
-		$vars['name'] = str_replace( '-', '_', $vars['name'] );
-
-		return $vars;
-	}
 
     /**
      * Changes the name to a camelcased combination of vendor and name
@@ -55,6 +42,18 @@ class ShopwareInstaller extends BaseInstaller
         }, $vars['name']);
 
         $vars['name'] = ucfirst($vars['vendor']) . ucfirst($camelCasedName);
+
+        return $vars;
+    }
+
+    /**
+     * Changes the name to a underscore separated name
+     * @param  array $vars
+     * @return array
+     */
+    private function correctThemeName($vars)
+    {
+        $vars['name'] = str_replace('-', '_', $vars['name']);
 
         return $vars;
     }

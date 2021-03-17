@@ -79,12 +79,30 @@ class CheckoutOrderBuilderTest extends TestCase
      /**
      * @test
      */
-    public function setLocale()
+    public function setSCOLocale()
     {
         $this->order->setLocale('sv-Se');
 
         $this->assertEquals($this->order->getLocale(), 'sv-Se');
     }
 
+    /**
+     * @test
+     */
+    public function setValidationCallbackUri()
+    {
+        $validationCallbackUri = 'http://localhost:51898/validation-callback';
+        $this->order->setValidationCallbackUri($validationCallbackUri);
+        $this->assertEquals($this->order->getMerchantSettings()->getValidationCallbackUri(), $validationCallbackUri);
+    }
 
+    /**
+     * @test
+     */
+    public function setMerchantData()
+    {
+        $merchantData = 'Newsletter:true';
+        $this->order->setMerchantData($merchantData);
+        $this->assertEquals($this->order->getMerchantData(), $merchantData);
+    }
 }

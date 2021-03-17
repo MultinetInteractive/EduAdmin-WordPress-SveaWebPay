@@ -12,7 +12,7 @@ use Svea\WebPay\Config\ConfigurationService;
 /**
  * @author Anneli Halld'n, Daniel Brolund for Svea Webpay
  */
-class CardPaymentIntegrationTest extends \PHPUnit_Framework_TestCase
+class CardPaymentIntegrationTest extends \PHPUnit\Framework\TestCase
 {
 
     public function test_createOrder_usePayPage_redirects_to_paypage()
@@ -36,7 +36,7 @@ class CardPaymentIntegrationTest extends \PHPUnit_Framework_TestCase
             ->usePayPage()// PayPageObject
             ->setReturnUrl("http://myurl.se")
             ->getPaymentForm();
-        $url = "https://test.sveaekonomi.se/webpay/payment";
+        $url = "https://webpaypaymentgatewaystage.svea.com/webpay/payment";
 
         /** CURL  **/
         $fields = array('merchantid' => urlencode($form->merchantid), 'message' => urlencode($form->xmlMessageBase64), 'mac' => urlencode($form->mac));
@@ -62,8 +62,8 @@ class CardPaymentIntegrationTest extends \PHPUnit_Framework_TestCase
 
         //print_r( $cr);        
         $this->assertEquals(200, $info['http_code']);
-        $this->assertEquals(2, $info['redirect_count']);
-        $expected_infourl = "https://test.sveaekonomi.se/webpay/public/static/paypage.html";
+        $this->assertEquals(1, $info['redirect_count']);
+        $expected_infourl = "https://webpaypaymentgatewaystage.svea.com/webpay/public/static/paypage.html";
         $start_of_actual_infourl = substr($info['url'], 0, strlen($expected_infourl));
         $this->assertEquals($expected_infourl, $start_of_actual_infourl);
     }

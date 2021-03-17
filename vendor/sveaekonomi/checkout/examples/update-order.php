@@ -48,17 +48,19 @@ try {
      * Example of update the order and getting the response data
      */
     $data = array(
-        "orderId" => 1669,
+        "orderId" => 251147,
+        "merchantData" => "test",
         "cart" => array(
             "items" => array(
                 array(
                     "articleNumber" => "123456",
-                    "name" => "Dator",
+                    "name" => "Yellow rubber duck",
                     "quantity" => 200,
-                    "unitPrice" => 12300,
+                    "unitPrice" => 66600,
                     "discountPercent" => 1000,
                     "vatPercent" => 2500,
-                    "temporaryReference" => "230"
+                    "temporaryReference" => "230",
+                    "merchantData" => "Size: M"
                 ),
                 array(
                     "type" => "shipping_fee",
@@ -67,7 +69,8 @@ try {
                     "quantity" => 100,
                     "unitPrice" => 4900,
                     "vatPercent" => 2500,
-                    "temporaryReference" => "231"
+                    "temporaryReference" => "231",
+                    "merchantData" => null
                 )
             )
         )
@@ -107,9 +110,12 @@ try {
      *  - OrderId
      *  - Status
      * */
-    $orderId = $response['Response']['OrderId'];
-    $guiSnippet = $response['Response']['Gui']['Snippet'];
-    $orderStatus = $response['Response']['Status'];
+    $orderId = $response['OrderId'];
+    $guiSnippet = $response['Gui']['Snippet'];
+    $orderStatus = $response['Status'];
+
+    echo '<pre>' . print_r($response, true) . '</pre>';
+
 } catch (\Svea\Checkout\Exception\SveaApiException $ex) {
     examplePrintError($ex, 'Api errors');
 } catch (\Svea\Checkout\Exception\SveaConnectorException $ex) {

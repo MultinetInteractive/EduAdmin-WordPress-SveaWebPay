@@ -3,15 +3,17 @@
 namespace Svea\WebPay\Test\UnitTest\BuildOrder\Validator;
 
 use Exception;
+use Svea\WebPay\Config\ConfigurationProvider;
+use Svea\WebPay\Constant\DistributionType;
 use Svea\WebPay\WebPay;
 use Svea\WebPay\WebPayItem;
 use Svea\WebPay\Test\TestUtil;
 use Svea\WebPay\Config\ConfigurationService;
 
 /**
- * @author Anneli Halld'n, Daniel Brolund for Svea Webpay
+ * @author Anneli Halld'n, Daniel Brolund, Fredrik Sundell for Svea Webpay
  */
-class WebServiceOrderValidatorTest extends \PHPUnit_Framework_TestCase
+class WebServiceOrderValidatorTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @expectedException Svea\WebPay\BuildOrder\Validator\ValidationException
@@ -53,27 +55,12 @@ class WebServiceOrderValidatorTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Use to get paymentPlanParams to be able to test PaymentPlanRequest
-     * @return type
-     */
-    public function getGetPaymentPlanParamsForTesting($config)
-    {
-        $addressRequest = WebPay::getPaymentPlanParams($config);
-        $response = $addressRequest
-            ->setCountryCode("SE")
-            ->doRequest();
-
-        return $response->campaignCodes[0]->campaignCode;
-    }
-
-    /**
      * @expectedException Svea\WebPay\BuildOrder\Validator\ValidationException
      * @expectedExceptionMessage -Wrong customer type : PaymentPlanPayment not allowed for Company customer.
      */
     public function testFailOnCompanyPaymentPlanPayment()
     {
         $config = ConfigurationService::getDefaultConfig();
-        $code = $this->getGetPaymentPlanParamsForTesting($config);
         $builder = WebPay::CreateOrder($config);
         $order = $builder
             ->addOrderRow(TestUtil::createHostedOrderRow())
@@ -378,7 +365,7 @@ class WebServiceOrderValidatorTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException Svea\WebPay\BuildOrder\Validator\ValidationException
-     * @expectedExceptionMessage -incorrect datatype : quantity is not numeric, set as integer or float.
+     * @expectedExceptionMessage -incorrect datatype : quantity is not numeric
      */
     public function testFailOnQuantityNotNumeric()
     {
@@ -536,62 +523,185 @@ class WebServiceOrderValidatorTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @expectedException Exception
-     * @expectedExceptionMessage
-     * -missing parameter: This method requires an Svea\WebPay\Config\ConfigurationProvider object as parameter. Create a class that implements class Svea\WebPay\Config\ConfigurationProvider. Set returnvalues to configuration values. Create an object from that class. Alternative use static function from class ConfigurationService e.g. ConfigurationService::getDefaultConfig(). You can replace the default config values into config files to return your own config values.');
+     * @expectedExceptionMessage -missing parameter: This method requires an Svea\WebPay\Config\ConfigurationProvider object as parameter. Create a class that implements class Svea\WebPay\Config\ConfigurationProvider. Set returnvalues to configuration values. Create an object from that class. Alternative use static function from class ConfigurationService e.g. ConfigurationService::getDefaultConfig(). You can replace the default config values into config files to return your own config values.
      */
-    public function testFailOnMissingCofigurationProviderCreateOrder()
+    public function testFailOnMissingConfigurationProviderCreateOrder()
     {
         $object = WebPay::createOrder();
     }
 
     /**
      * @expectedException Exception
-     * @expectedExceptionMessage
-     * -missing parameter: This method requires an Svea\WebPay\Config\ConfigurationProvider object as parameter. Create a class that implements class Svea\WebPay\Config\ConfigurationProvider. Set returnvalues to configuration values. Create an object from that class. Alternative use static function from class ConfigurationService e.g. ConfigurationService::getDefaultConfig(). You can replace the default config values into config files to return your own config values.');
+     * @expectedExceptionMessage -missing parameter: This method requires an Svea\WebPay\Config\ConfigurationProvider object as parameter. Create a class that implements class Svea\WebPay\Config\ConfigurationProvider. Set returnvalues to configuration values. Create an object from that class. Alternative use static function from class ConfigurationService e.g. ConfigurationService::getDefaultConfig(). You can replace the default config values into config files to return your own config values.
      */
-    public function testFailOnMissingCofigurationProviderGetPaymentPlanParams()
+    public function testFailOnMissingConfigurationProviderGetPaymentPlanParams()
     {
         $object = WebPay::getPaymentPlanParams();
     }
 
     /**
      * @expectedException Exception
-     * @expectedExceptionMessage
-     * -missing parameter: This method requires an Svea\WebPay\Config\ConfigurationProvider object as parameter. Create a class that implements class Svea\WebPay\Config\ConfigurationProvider. Set returnvalues to configuration values. Create an object from that class. Alternative use static function from class ConfigurationService e.g. ConfigurationService::getDefaultConfig(). You can replace the default config values into config files to return your own config values.');
+     * @expectedExceptionMessage -missing parameter: This method requires an Svea\WebPay\Config\ConfigurationProvider object as parameter. Create a class that implements class Svea\WebPay\Config\ConfigurationProvider. Set returnvalues to configuration values. Create an object from that class. Alternative use static function from class ConfigurationService e.g. ConfigurationService::getDefaultConfig(). You can replace the default config values into config files to return your own config values.
      */
-    public function testFailOnMissingCofigurationProviderDeliverOrder()
+    public function testFailOnMissingConfigurationProviderDeliverOrder()
     {
         $object = WebPay::deliverOrder();
     }
 
     /**
      * @expectedException Exception
-     * @expectedExceptionMessage
-     * -missing parameter: This method requires an Svea\WebPay\Config\ConfigurationProvider object as parameter. Create a class that implements class Svea\WebPay\Config\ConfigurationProvider. Set returnvalues to configuration values. Create an object from that class. Alternative use static function from class ConfigurationService e.g. ConfigurationService::getDefaultConfig(). You can replace the default config values into config files to return your own config values.');
+     * @expectedExceptionMessage -missing parameter: This method requires an Svea\WebPay\Config\ConfigurationProvider object as parameter. Create a class that implements class Svea\WebPay\Config\ConfigurationProvider. Set returnvalues to configuration values. Create an object from that class. Alternative use static function from class ConfigurationService e.g. ConfigurationService::getDefaultConfig(). You can replace the default config values into config files to return your own config values.
      */
-    public function testFailOnMissingCofigurationProviderCloseOrder()
+    public function testFailOnMissingConfigurationProviderCloseOrder()
     {
         $object = WebPay::closeOrder();
     }
 
     /**
      * @expectedException Exception
-     * @expectedExceptionMessage
-     * -missing parameter: This method requires an Svea\WebPay\Config\ConfigurationProvider object as parameter. Create a class that implements class Svea\WebPay\Config\ConfigurationProvider. Set returnvalues to configuration values. Create an object from that class. Alternative use static function from class ConfigurationService e.g. ConfigurationService::getDefaultConfig(). You can replace the default config values into config files to return your own config values.');
+     * @expectedExceptionMessage -missing parameter: This method requires an Svea\WebPay\Config\ConfigurationProvider object as parameter. Create a class that implements class Svea\WebPay\Config\ConfigurationProvider. Set returnvalues to configuration values. Create an object from that class. Alternative use static function from class ConfigurationService e.g. ConfigurationService::getDefaultConfig(). You can replace the default config values into config files to return your own config values.
      */
-    public function tes_tFailOnMissingCofigurationProviderGetAddresses()
+    public function testFailOnMissingConfigurationProviderGetAddresses()
     {
         $object = WebPay::getAddresses();
     }
 
     /**
      * @expectedException Exception
-     * @expectedExceptionMessage
-     * -missing parameter: This method requires an Svea\WebPay\Config\ConfigurationProvider object as parameter. Create a class that implements class Svea\WebPay\Config\ConfigurationProvider. Set returnvalues to configuration values. Create an object from that class. Alternative use static function from class ConfigurationService e.g. ConfigurationService::getDefaultConfig(). You can replace the default config values into config files to return your own config values.');
+     * @expectedExceptionMessage -missing parameter: This method requires an Svea\WebPay\Config\ConfigurationProvider object as parameter. Create a class that implements class Svea\WebPay\Config\ConfigurationProvider. Set returnvalues to configuration values. Create an object from that class. Alternative use static function from class ConfigurationService e.g. ConfigurationService::getDefaultConfig(). You can replace the default config values into config files to return your own config values.
      */
-    public function tes_tFailOnMissingCofigurationProviderGetPaymentMethods()
+    public function testFailOnMissingConfigurationProviderGetPaymentMethods()
     {
         $object = WebPay::getPaymentMethods();
     }
 
+    /**
+     * @expectedException Exception
+     * @expectedExceptionMessage -incorrect value : distributionType EInvoiceB2B is only allowed for Norway.
+     */
+    public function testFailOnIncorrectCountryCodeForInvoiceB2B()
+    {
+        $config = ConfigurationService::getDefaultConfig();
+        $object = WebPay::deliverOrder($config)
+            ->setCountryCode("SE")
+            ->setInvoiceDistributionType(DistributionType::EINVOICEB2B)
+            ->setOrderId(1)
+            ->deliverInvoiceOrder()
+            ->prepareRequest();
+    }
+
+    /**
+     * @expectedException Svea\WebPay\BuildOrder\Validator\ValidationException
+     * @expectedExceptionMessage -incorrect value : The fifth character of PeppolId must be ":"
+     */
+    public function testFailOnIncorrectFormatPeppolIdFifthCharacter()
+     {
+            $config = ConfigurationService::getDefaultConfig();
+            $request = WebPay::createOrder($config)
+                ->addOrderRow(TestUtil::createOrderRow())
+                ->addCustomerDetails(
+                    WebPayItem::companyCustomer()
+                        ->setNationalIdNumber(194608142222)
+                )
+                ->setOrderDate("2019-04-01")
+                ->setPeppolId("12345678")
+                ->setCountryCode("SE")
+                ->useInvoicePayment()
+                ->prepareRequest();
+    }
+
+    /**
+     * @expectedException Svea\WebPay\BuildOrder\Validator\ValidationException
+     * @expectedExceptionMessage -incorrect value : First 4 characters of PeppolId must be numeric.
+     */
+    public function testFailOnIncorrectFormatPeppolIdFirstCharacters()
+    {
+        $config = ConfigurationService::getDefaultConfig();
+        $request = WebPay::createOrder($config)
+            ->addOrderRow(TestUtil::createOrderRow())
+            ->addCustomerDetails(
+                WebPayItem::companyCustomer()
+                    ->setNationalIdNumber(194608142222))
+            ->setOrderDate("2019-04-01")
+            ->setPeppolId("12a4:1sdf")
+            ->setCountryCode("SE")
+            ->useInvoicePayment()
+            ->prepareRequest();
+    }
+
+    /**
+     * @expectedException Svea\WebPay\BuildOrder\Validator\ValidationException
+     * @expectedExceptionMessage -incorrect value : All characters after the fifth character in PeppolId must be alphanumeric.
+     */
+    public function testFailOnIncorrectFormatPeppolIdLastCharacters()
+    {
+        $config = ConfigurationService::getDefaultConfig();
+        $request = WebPay::createOrder($config)
+            ->addOrderRow(TestUtil::createOrderRow())
+            ->addCustomerDetails(
+                WebPayItem::companyCustomer()
+                    ->setNationalIdNumber(194608142222))
+            ->setOrderDate("2019-04-01")
+            ->setPeppolId("1234:....")
+            ->setCountryCode("SE")
+            ->useInvoicePayment()
+            ->prepareRequest();
+    }
+
+    /**
+     * @expectedException Svea\WebPay\BuildOrder\Validator\ValidationException
+     * @expectedExceptionMessage -incorrect value : PeppolId is too short, must be 6 characters or longer.
+     */
+    public function testFailOnIncorrectFormatPeppolIdTooShort()
+    {
+        $config = ConfigurationService::getDefaultConfig();
+        $request = WebPay::createOrder($config)
+            ->addOrderRow(TestUtil::createOrderRow())
+            ->addCustomerDetails(
+                WebPayItem::companyCustomer()
+                    ->setNationalIdNumber(194608142222))
+            ->setOrderDate("2019-04-01")
+            ->setPeppolId("1234")
+            ->setCountryCode("SE")
+            ->useInvoicePayment()
+            ->prepareRequest();
+    }
+
+    /**
+     * @expectedException Svea\WebPay\BuildOrder\Validator\ValidationException
+     * @expectedExceptionMessage -incorrect value : PeppolId is too long, must be 55 characters or fewer.
+     */
+    public function testFailOnIncorrectFormatPeppolIdTooLong()
+    {
+        $config = ConfigurationService::getDefaultConfig();
+        $request = WebPay::createOrder($config)
+            ->addOrderRow(TestUtil::createOrderRow())
+            ->addCustomerDetails(
+                WebPayItem::companyCustomer()
+                    ->setNationalIdNumber(194608142222))
+            ->setOrderDate("2019-04-01")
+            ->setPeppolId("1234:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+            ->setCountryCode("SE")
+            ->useInvoicePayment()
+            ->prepareRequest();
+    }
+
+    /**
+     * @expectedException Svea\WebPay\BuildOrder\Validator\ValidationException
+     * @expectedExceptionMessage -incorrect value : CustomerType must be a company when using PeppolId.
+     */
+    public function testFailOnIncorrectFormatPeppolIdWrongCustomerType()
+    {
+        $config = ConfigurationService::getDefaultConfig();
+        $request = WebPay::createOrder($config)
+            ->addOrderRow(TestUtil::createOrderRow())
+            ->addCustomerDetails(
+                WebPayItem::individualCustomer()
+                    ->setNationalIdNumber(194605092222))
+            ->setOrderDate("2019-04-01")
+            ->setPeppolId("1234:asdf")
+            ->setCountryCode("SE")
+            ->useInvoicePayment()
+            ->prepareRequest();
+    }
 }

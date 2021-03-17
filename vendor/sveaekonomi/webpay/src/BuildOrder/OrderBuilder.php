@@ -8,7 +8,7 @@ use Svea\WebPay\Config\ConfigurationProvider;
  * OrderBuilder collects and prepares order data to be sent to Svea. It is the
  * parent of CreateOrderBuilder and DeliverOrderBuilder.
  *
- * @author Kristian Grossman-Madsen, Anneli Halld'n, Daniel Brolund for Svea Svea\WebPay\WebPay
+ * @author Kristian Grossman-Madsen, Anneli Halld'n, Daniel Brolund, Fredrik Sundell for Svea WebPay
  */
 class OrderBuilder
 {
@@ -17,6 +17,10 @@ class OrderBuilder
      */
     public $testmode = false;
 
+    /**
+     * @var boolean
+     */
+    public $logging = false;
     /**
      * @var ConfigurationProvider $conf
      */
@@ -82,12 +86,39 @@ class OrderBuilder
      */
     public $clientOrderNumber;
 
+    /*
+     * @var \Svea\WebPay\BuildOrder\RowBuilders\OrderDeliveryAddress
+     */
+    public $orderDeliveryAddress;
+
+    /*
+     * @var string Used to send Peppol invoices
+     */
+    public $peppolId;
+
+    /*
+     * @var string Mobile number to payer, only used with Swish else ignored
+     */
+    public $payerAlias;
+
     /**
      * @param ConfigurationProvider $config
      */
     public function __construct($config)
     {
         $this->conf = $config;
+    }
+
+    /*
+     * Optional
+     * @param \Svea\WebPay\BuildOrder\RowBuilders\OrderDeliveryAddress
+     * @return $this
+     */
+    public function setOrderDeliveryAddress($orderDeliveryAddressObject)
+    {
+        $this->orderDeliveryAddress = $orderDeliveryAddressObject;
+
+        return $this;
     }
 
     /**
@@ -272,6 +303,43 @@ class OrderBuilder
     public function setOrderDate($orderDateAsString)
     {
         $this->orderDate = $orderDateAsString;
+
+        return $this;
+    }
+
+    /**
+     * Enables/disables logging for raw HTTP requests / responses
+     *
+     * @param boolean $status, if true then raw requests / responses will be logged on the order. Disabled by default.
+     * @return $this
+     */
+    public function enableLogging($status)
+    {
+        $this->logging = $status;
+
+        return $this;
+    }
+
+    /**
+     * Optional, used to send Peppol invoices
+     * @param string $peppolId
+     * @return $this
+     */
+    public function setPeppolId($peppolId)
+    {
+        $this->peppolId = $peppolId;
+
+        return $this;
+    }
+
+    /**
+     * Required if using Swish, ignored if not
+     * @param string $payerAlias
+     * @return $this
+     */
+    public function setPayerAlias($payerAlias)
+    {
+        $this->payerAlias = $payerAlias;
 
         return $this;
     }

@@ -4,6 +4,7 @@ namespace Svea\WebPay\Checkout;
 
 use Svea\WebPay\Checkout\Helper\CheckoutOrderBuilder;
 use Svea\WebPay\Checkout\Model\PresetValue;
+use Svea\WebPay\Constant\IdentityFlags;
 
 /**
  * Class CheckoutOrderEntry
@@ -65,6 +66,18 @@ class CheckoutOrderEntry
     }
 
     /**
+     * Returns all campaigns that is available on the merchant
+     *
+     * @return array
+     */
+    public function getAvailablePartPaymentCampaigns()
+    {
+        $getAvailablePartPaymentCampaigns = $this->checkoutOrderBuilder->getAvailablePartPaymentCampaigns();
+
+        return $getAvailablePartPaymentCampaigns;
+    }
+
+    /**
      * @param string $checkoutUri
      * @return $this
      */
@@ -120,6 +133,17 @@ class CheckoutOrderEntry
     }
 
     /**
+     * @param string $validationCallbackUri
+     * @return $this
+     */
+     public function setValidationCallbackUri($validationCallbackUri)
+    {
+        $this->checkoutOrderBuilder->setValidationCallbackUri($validationCallbackUri);
+
+        return $this;
+    }
+
+    /**
      * Required for get and update methods
      * @param $id
      * @return $this
@@ -151,6 +175,19 @@ class CheckoutOrderEntry
     public function addPresetValue($presetValues)
     {
         $this->checkoutOrderBuilder->addPresetValue($presetValues);
+
+        return $this;
+    }
+
+    /**
+     * Sets a partnerKey that's provided by Svea
+     *
+     * @param string $partnerKey
+     * @return $this
+     */
+    public function setPartnerKey($partnerKey)
+    {
+        $this->checkoutOrderBuilder->setPartnerKey($partnerKey);
 
         return $this;
     }
@@ -238,5 +275,42 @@ class CheckoutOrderEntry
     public function getCheckoutOrderBuilder()
     {
         return $this->checkoutOrderBuilder;
+    }
+
+    /**
+     * Add IdentityFlag to the list of IdentityFlag
+     *
+     * @param string $identityFlag
+     * @return $this
+     */
+    public function addIdentityFlag($identityFlag)
+    {
+        $this->checkoutOrderBuilder->addIdentityFlag($identityFlag);
+
+        return $this;
+    }
+
+    /**
+     * Set merchantData on order
+     *
+     * @param string $merchantData
+     * @return $this
+     */
+    public function setMerchantData($merchantData)
+    {
+        $this->checkoutOrderBuilder->setMerchantData($merchantData);
+        return $this;
+    }
+
+    /**
+     * Enable/disable electronic id authentication when end-customer finalizes order, default = false
+     *
+     * @param bool $enabled
+     * @return $this
+     */
+    public function setRequireElectronicIdAuthentication($enabled)
+    {
+        $this->checkoutOrderBuilder->setRequireElectronicIdAuthentication($enabled);
+        return $this;
     }
 }

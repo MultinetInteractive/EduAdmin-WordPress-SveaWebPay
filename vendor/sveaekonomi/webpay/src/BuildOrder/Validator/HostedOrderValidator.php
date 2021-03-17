@@ -2,8 +2,9 @@
 
 namespace Svea\WebPay\BuildOrder\Validator;
 
+use Svea\WebPay\Helper\Helper;
 /**
- * @author Anneli Halld'n, Daniel Brolund for Svea Webpay
+ * @author Anneli Halld'n, Daniel Brolund, Fredrik Sundell for Svea Webpay
  */
 class HostedOrderValidator extends OrderValidator
 {
@@ -17,17 +18,47 @@ class HostedOrderValidator extends OrderValidator
      */
     public function validate($order)
     {
-        if (isset($order->orgNumber) || isset($order->companyVatNumber) || isset($order->companyName)) {
+        if (isset($order->order->orgNumber) || isset($order->order->companyVatNumber) || isset($order->order->companyName)) {
             $this->isCompany = TRUE;
         }
 
-        $this->errors = $this->validateClientOrderNumber($order, $this->errors);
+        $this->errors = $this->validateClientOrderNumber($order->order, $this->errors);
         $this->errors = $this->validateCurrency($order, $this->errors);
-//        $this->errors = $this->validateCountryCode($order, $this->errors); //should be optional for hosted payment because not used
-        $this->errors = $this->validateRequiredFieldsForOrder($order, $this->errors);
+        $this->errors = $this->validateCountryCode($order, $this->errors); //should be optional for hosted payment because not used
+        $this->errors = $this->validateRequiredFieldsForOrder($order->order, $this->errors);
         $this->errors = $this->validateOrderRows($order, $this->errors);
+        $this->errors = $this->validatePayerAlias($order, $this->errors); // validate for swish
 
         return $this->errors;
+    }
+
+    /**
+     * @param type $order
+     * @param array $errors
+     * @return array
+     */
+    private function validatePayerAlias($order, $errors)
+    {
+        if (isset($order->order->payerAlias) && $order->paymentMethod == "SWISH")
+        {
+            if(ctype_digit($order->order->payerAlias) == false)
+            {
+                $errors['incorrect type'] = 'payerAlias must be numeric and can not contain any non-numeric characters';
+            }
+            if(strlen($order->order->payerAlias) != 11)
+            {
+                $errors['incorrect length'] = 'payerAlias must be 11 digits';
+            }
+            if($order->order->countryCode != "SE")
+            {
+                $errors['incorrect value'] = 'countryCode must be set to "SE" if payment method is SWISH';
+            }
+        }
+        elseif(isset($order->order->payerAlias) == false && isset($order->paymentMethod) && $order->paymentMethod == "SWISH")
+        {
+            $errors['missing value'] = 'payerAlias must be set if using payment method SWISH. Use function setPayerAlias()';
+        }
+        return $errors;
     }
 
     /**
@@ -40,7 +71,10 @@ class HostedOrderValidator extends OrderValidator
         if (isset($order->clientOrderNumber) == false || "" == $order->clientOrderNumber) {
             $errors['missing value'] = "ClientOrderNumber is required. Use function setClientOrderNumber().";
         }
-
+        /*if(isset($order->clientOrderNumber) && $order->paymentMethod == "SWISH")
+        {
+            $errors['incorrect value'] = "ClientOrderNumber cannot be longer than 35 characters for Swish payments";
+        }*/
         return $errors;
     }
 
@@ -51,10 +85,19 @@ class HostedOrderValidator extends OrderValidator
      */
     private function validateCurrency($order, $errors)
     {
-        if (isset($order->currency) == false) {
+        if (isset($order->order->currency) == false) {
             $errors['missing value'] = "Currency is required. Use function setCurrency().";
         }
-
+        if (isset($order->order->currency) && isset($order->paymentMethod))
+        {
+            if($order->paymentMethod == "SVEACARDPAY" || $order->paymentMethod == "SVEACARDPAY_PF")
+            {
+                if(Helper::isCardPayCurrency($order->order->currency) == false)
+                {
+                    $errors['unsupported currency'] = "Currency is not supported with this payment method.";
+                }
+            }
+        }
         return $errors;
     }
 
@@ -65,8 +108,8 @@ class HostedOrderValidator extends OrderValidator
      */
     private function validateCountryCode($order, $errors)
     {
-        if (isset($order->countryCode) == false) {
-            $errors['missing value'] = "CountryCode is required. Use function setCountryCode().";
+        if (isset($order->order->countryCode) == false && isset($order->paymentMethod) && $order->paymentMethod == "SVEACARDPAY_PF") {
+            $errors['missing value'] = "CountryCode is required for SVEACARDPAY_PF. Use function setCountryCode().";
         }
 
         return $errors;

@@ -10,7 +10,7 @@ require_once $root . '/../../../TestUtil.php';
 /**
  * @author Kristian Grossman-Madsen
  */
-class BvDiscountTest extends PHPUnit_Framework_TestCase {
+class BvDiscountTest extends \PHPUnit\Framework\TestCase {
     
     public function test_bv_order_sent_incvat_two_decimals_with_both_discounts() {        
 //    print_r("\n\n-----test_bv_order_sent_incvat_two_decimals_with_both_discounts()\n");
@@ -48,7 +48,7 @@ class BvDiscountTest extends PHPUnit_Framework_TestCase {
                 ->setName("-20i@6%*1")
             )
         ;        $request = $order->usePaymentMethod(PaymentMethod::KORTCERT)
-                ->setReturnUrl("https://test.sveaekonomi.se/webpay-admin/admin/merchantresponsetest.xhtml")
+                ->setReturnUrl("https://webpaypaymentgatewaystage.svea.com/webpay-admin/admin/merchantresponsetest.xhtml")
                 ->getPaymentForm();
         
 //    print_r( $request->xmlMessage );
@@ -147,7 +147,7 @@ class BvDiscountTest extends PHPUnit_Framework_TestCase {
                 ->setName("-20i*1")
             )
         ;        
-        $request = $order->usePaymentMethod(PaymentMethod::KORTCERT)->setReturnUrl("https://test.sveaekonomi.se/webpay-admin/admin/merchantresponsetest.xhtml");
+        $request = $order->usePaymentMethod(PaymentMethod::KORTCERT)->setReturnUrl("https://webpaypaymentgatewaystage.svea.com/webpay-admin/admin/merchantresponsetest.xhtml");
         $request = $request->getPaymentForm();
         
 //    print_r( $request->xmlMessage );

@@ -8,11 +8,11 @@
         "Aimeos",
         "AGL",
         "AnnotateCms",
-      "Attogram",
+        "Attogram",
         "Bitrix",
         "CakePHP",
         "Chef",
-      "Cockpit",
+        "Cockpit",
         "CodeIgniter",
         "concrete5",
         "Craft",
@@ -21,47 +21,59 @@
         "Dolibarr",
         "Drupal",
         "Elgg",
-      "Eliasis",
-      "ExpressionEngine",
+        "Eliasis",
+        "ExpressionEngine",
+        "eZ Platform",
         "FuelPHP",
         "Grav",
         "Hurad",
         "ImageCMS",
-      "iTop",
+        "iTop",
         "Joomla",
-      "Kanboard",
+        "Kanboard",
+        "Known",
         "Kohana",
+        "Lan Management System",
         "Laravel",
-      "Lavalite",
+        "Lavalite",
         "Lithium",
         "Magento",
+        "majima",
         "Mako",
+        "MantisBT",
         "Mautic",
-      "Maya",
+        "Maya",
+        "MODX",
         "MODX Evo",
         "MediaWiki",
         "OXID",
+        "osclass",
         "MODULEWork",
         "Moodle",
         "Piwik",
+        "pxcms",
         "phpBB",
-      "Plentymarkets",
+        "Plentymarkets",
         "PPI",
         "Puppet",
-      "Porto",
-      "RadPHP",
-      "ReIndex",
+        "Porto",
+        "ProcessWire",
+        "RadPHP",
+        "ReIndex",
         "Roundcube",
         "shopware",
         "SilverStripe",
         "SMF",
-      "SyDES",
+        "Starbug",
+        "SyDES",
+        "Sylius",
         "symfony",
         "Thelia",
         "TYPO3",
+        "WHMCS",
         "WolfCMS",
         "WordPress",
-      "YAWIK",
+        "YAWIK",
         "Zend",
         "Zikula"
     ],
@@ -76,10 +88,13 @@
     "autoload": {
         "psr-4": { "Composer\\Installers\\": "src/Composer/Installers" }
     },
+    "autoload-dev": {
+        "psr-4": { "Composer\\Installers\\Test\\": "tests/Composer/Installers/Test" }
+    },
     "extra": {
         "class": "Composer\\Installers\\Plugin",
         "branch-alias": {
-            "dev-master": "1.0-dev"
+            "dev-main": "1.x-dev"
         }
     },
     "replace": {
@@ -87,13 +102,18 @@
         "roundcube/plugin-installer": "*"
     },
     "require": {
-        "composer-plugin-api": "^1.0"
+        "composer-plugin-api": "^1.0 || ^2.0"
     },
     "require-dev": {
-        "composer/composer": "1.0.*@dev",
-        "phpunit/phpunit": "4.1.*"
+        "composer/composer": "1.6.* || ^2.0",
+        "composer/semver": "^1 || ^3",
+        "symfony/phpunit-bridge": "^4.2 || ^5",
+        "phpstan/phpstan": "^0.12.55",
+        "symfony/process": "^2.3",
+        "phpstan/phpstan-phpunit": "^0.12.16"
     },
     "scripts": {
-        "test": "phpunit"
+        "test": "SYMFONY_PHPUNIT_REMOVE_RETURN_TYPEHINT=1 vendor/bin/simple-phpunit",
+        "phpstan": "vendor/bin/phpstan analyse"
     }
 }

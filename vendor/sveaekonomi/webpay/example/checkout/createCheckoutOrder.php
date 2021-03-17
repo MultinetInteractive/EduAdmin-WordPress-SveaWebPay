@@ -2,7 +2,7 @@
 /**
  * example file, how to create an checkout order request
  *
- * @author Savo Garovic and Janko Stevanovic  for Svea Svea\WebPay\WebPay
+ * @author Savo Garovic, Janko Stevanovic and Fredrik Sundell for Svea Ekonomi AB
  */
 
 require_once '../../vendor/autoload.php';
@@ -29,6 +29,10 @@ $orderBuilder->setCountryCode('SE')// customer country, we recommend basing this
     ->setConfirmationUri('http://localhost:51925/checkout/confirm')
     ->setPushUri('https://svea.com/push.aspx?sid=123&svea_order=123')
     ->setTermsUri('http://localhost:51898/terms')
+  //->setValidationCallbackUri('http://localhost:51898/validation-callback')
+  //->setPartnerKey("77FB33EC-505D-4CCF-AA21-D9DF50DC8344")
+  //->setMerchantData("merchantData")
+  //->setRequireElectronicIdAuthentication(true)
     ->setLocale($locale);
 
 $presetPhoneNumber = WebPayItem::presetValue()
@@ -88,7 +92,7 @@ $orderBuilder->addFee($shippingItem);
 
 try {
     $response = $orderBuilder->createOrder();
-    print_r($response);
+    echo "<pre>" . print_r($response, true) . "</pre>";
 } catch (\Exception $e) {
     echo "<pre>" . print_r($e->getMessage(), true) . "</pre>";
 }

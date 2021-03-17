@@ -5,11 +5,11 @@ use Svea\WebPay\WebPay;
 use Svea\WebPay\WebPayItem;
 use Svea\WebPay\Test\TestUtil;
 use Svea\WebPay\Helper\Helper;
-use PHPUnit_Framework_TestCase;
+use \PHPUnit\Framework\TestCase;
 use Svea\WebPay\Config\ConfigurationService;
 
 
-class GetRequestTotalsTest extends PHPUnit_Framework_TestCase
+class GetRequestTotalsTest extends \PHPUnit\Framework\TestCase
 {
 
     function test_get_invoice_total_amount_before_createorder()
@@ -219,45 +219,6 @@ class GetRequestTotalsTest extends PHPUnit_Framework_TestCase
         $preview = $order->useInvoicePayment()->getRequestTotals();
         $this->assertEquals("119.73", $preview['total_incvat']);
         //$this->assertEquals( $preview['total_incvat'], $response->amount );
-    }
-
-    /// example of getRequestTotals() not matching service --------------------------------------------------------------------------
-    public function test_integrationtest_reference_1400_00_inc_behaviour()
-    {
-        $config = ConfigurationService::getDefaultConfig();
-        $request = WebPay::createOrder($config)
-            ->addOrderRow(
-                WebPayItem::orderRow()
-                    ->setAmountIncVat(1400.00)
-                    ->setVatPercent(6)
-                    ->setQuantity(1)
-            )
-            ->addCustomerDetails(TestUtil::createIndividualCustomer("SE"))
-            ->setCountryCode("SE")
-            ->setOrderDate("2016-04-14")
-            ->useInvoicePayment()
-            ->doRequest();
-        $this->assertEquals(1, $request->accepted);
-        $this->assertEquals(1400, $request->amount);
-    }
-
-    public function test_integrationtest_reference_1321_00_ex_behaviour()
-    {
-        $config = ConfigurationService::getDefaultConfig();
-        $request = WebPay::createOrder($config)
-            ->addOrderRow(
-                WebPayItem::orderRow()
-                    ->setAmountExVat(1321.00)
-                    ->setVatPercent(6)
-                    ->setQuantity(1)
-            )
-            ->addCustomerDetails(TestUtil::createIndividualCustomer("SE"))
-            ->setCountryCode("SE")
-            ->setOrderDate("2016-04-14")
-            ->useInvoicePayment()
-            ->doRequest();
-        $this->assertEquals(1, $request->accepted);
-        $this->assertEquals(1400.26, $request->amount);
     }
 
     public function test_getRequestTotals_reference_1400_00_inc_behaviour()

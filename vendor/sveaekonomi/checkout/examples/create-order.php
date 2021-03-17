@@ -19,6 +19,7 @@ require_once '../include.php';
  * Shared Secret string between Svea and merchant
  * Base Url for SVEA Api. Can be TEST_BASE_URL and PROD_BASE_URL
  */
+
 $checkoutMerchantId = 100002;
 $checkoutSecret = "3862e010913d7c44f104ddb4b2881f810b50d5385244571c3327802e241140cc692522c04aa21c942793c8a69a8e55ca7b6131d9ac2a2ae2f4f7c52634fe30d2";
 $baseUrl = \Svea\Checkout\Transport\Connector::TEST_BASE_URL;
@@ -58,56 +59,52 @@ try {
         "countryCode" => "SE",
         "currency" => "SEK",
         "locale" => "sv-SE",
-        "clientOrderNumber" => 61000,
+        "clientOrderNumber" => rand(10000,30000000),
+        "merchantData" => "Test string from merchant",
         "cart" => array(
             "items" => array(
                 array(
-                    "articleNumber" => "1234567",
-                    "name" => "Dator",
+                    "articleNumber" => "11",
+                    "name" => "aa",
                     "quantity" => 200,
                     "unitPrice" => 12300,
-                    "discountPercent" => 1000,
                     "vatPercent" => 2500,
-                    'temporaryReference' => "230"
+                    "unit" => "st",
+                    "temporaryReference" => "1",
+                    "merchantData" => "Size: S"
                 ),
                 array(
-                    "articleNumber" => "7654321",
-                    "name" => "Fork",
+                    "articleNumber" => "22",
+                    "name" => "bb",
                     "quantity" => 300,
-                    "unitPrice" => 15800,
-                    "discountPercent" => 2000,
+                    "unitPrice" => 25000,
                     "vatPercent" => 2500,
-                    'temporaryReference' => "231"
-                ),
-                array(
-                    "type" => "shipping_fee",
-                    "articleNumber" => "",
-                    "name" => "Shipping fee",
-                    "quantity" => 100,
-                    "unitPrice" => 4900,
-                    "vatPercent" => 2500
+                    "unit" => "pcs",
+                    "temporaryReference" => "2",
+                    "merchantData" => null
                 )
             )
         ),
         "presetValues" => array(
             array(
                 "typeName" => "emailAddress",
-                "value" => "test@sveaekonomi.se",
-                "isReadonly" => true
+                "value" => "test@yourdomain.se",
+                "isReadonly" => false
             ),
             array(
                 "typeName" => "postalCode",
-                "value" => "11850",
-                "isReadonly" => true
+                "value" => "99999",
+                "isReadonly" => false
             )
         ),
         "merchantSettings" => array(
             "termsUri" => "http://localhost:51898/terms",
             "checkoutUri" => "http://localhost:51925/",
             "confirmationUri" => "http://localhost:51925/checkout/confirm",
-            "pushUri" => "https://svea.com/push.aspx?sid=123&svea_order=123"
+            "pushUri" => "https://localhost:51925/push.php?svea_order_id={checkout.order.uri}",
         )
     );
+
     $response = $checkoutClient->create($data);
 
     /*
@@ -145,6 +142,9 @@ try {
     $orderId = $response['OrderId'];
     $guiSnippet = $response['Gui']['Snippet'];
     $orderStatus = $response['Status'];
+
+    echo '<pre>' . print_r($response, true) . '</pre>';
+
 } catch (\Svea\Checkout\Exception\SveaApiException $ex) {
     examplePrintError($ex, 'Api errors');
 } catch (\Svea\Checkout\Exception\SveaConnectorException $ex) {

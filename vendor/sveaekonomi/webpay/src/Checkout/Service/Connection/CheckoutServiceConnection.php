@@ -5,7 +5,6 @@ namespace Svea\WebPay\Checkout\Service\Connection;
 use Svea\Checkout\CheckoutClient;
 use Svea\Checkout\Transport\Connector;
 use Svea\WebPay\Config\ConfigurationProvider;
-use Svea\WebPay\Checkout\Model\CheckoutSubsystemInfo;
 use Svea\WebPay\Checkout\Response\CheckoutResponseHelper;
 
 /**
@@ -52,8 +51,8 @@ class CheckoutServiceConnection implements ServiceConnection
     private function setConnector()
     {
         $this->connector = Connector::init(
-            $this->config->getCheckoutMerchantId(),
-            $this->config->getCheckoutSecret(),
+            $this->config->getCheckoutMerchantId(strtolower($this->countryCode)),
+            $this->config->getCheckoutSecret(strtolower($this->countryCode)),
             $this->config->getEndPoint(ConfigurationProvider::CHECKOUT)
         );
     }
@@ -93,16 +92,11 @@ class CheckoutServiceConnection implements ServiceConnection
     }
 
     /**
-     * Calls logic that initialize getting a Checkout Order Subsystem Information
-     * and returns response from server
      * @param mixed $requestData
-     * @return CheckoutSubsystemInfo
+     * @return mixed
      */
-    public function getCheckoutSubsystemInfo($requestData)
+    public function getAvailablePartPaymentCampaigns($requestData)
     {
-        $subsystemData = $this->checkoutClient->getOrderSubsystemInfo($requestData);
-
-        return new CheckoutSubsystemInfo($subsystemData);
+        return CheckoutResponseHelper::processData($this->checkoutClient->getAvailablePartPaymentCampaigns($requestData));
     }
-
 }

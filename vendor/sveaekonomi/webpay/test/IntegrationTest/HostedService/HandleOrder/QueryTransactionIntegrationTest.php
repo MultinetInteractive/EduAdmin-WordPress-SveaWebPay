@@ -5,6 +5,7 @@ namespace Svea\WebPay\Test\IntegrationTest\HostedService\HandleOrder;
 use Svea\WebPay\Config\ConfigurationService;
 use Svea\WebPay\HostedService\HostedAdminRequest\RecurTransaction;
 use Svea\WebPay\HostedService\HostedAdminRequest\QueryTransaction as QueryTransaction;
+use Svea\WebPay\WebPayAdmin;
 
 
 /**
@@ -12,8 +13,60 @@ use Svea\WebPay\HostedService\HostedAdminRequest\QueryTransaction as QueryTransa
  *
  * @author Kristian Grossman-Madsen for Svea Svea\WebPay\WebPay
  */
-class QueryTransactionIntegrationTest extends \PHPUnit_Framework_TestCase
+class QueryTransactionIntegrationTest extends \PHPUnit\Framework\TestCase
 {
+
+    // Svea\WebPay\WebPayAdmin::queryOrder() -----------------------------------------------
+    // returned type
+    /// queryOrder()
+    // invoice
+    // partpayment
+    // card
+    function test_queryOrder_queryCardOrder()
+    {
+        // Set the below to match the transaction, then run the test.
+        $transactionId = 590177;
+
+        $request = WebPayAdmin::queryOrder(
+            ConfigurationService::getSingleCountryConfig(
+                "SE",
+                "foo", "bar", "123456", // invoice
+                "foo", "bar", "123456", // paymentplan
+                "foo", "bar", "123456", // accountplan
+                "1200", // merchantid, secret
+                "27f18bfcbe4d7f39971cb3460fbe7234a82fb48f985cf22a068fa1a685fe7e6f93c7d0d92fee4e8fd7dc0c9f11e2507300e675220ee85679afa681407ee2416d",
+                false // prod = false
+            )
+        )
+            ->setTransactionId(strval($transactionId))
+            ->setCountryCode("SE");
+        $response = $request->queryCardOrder()->doRequest();
+//        echo "foo: ";
+//        var_dump($response); die;
+
+        $this->assertEquals(1, $response->accepted);
+
+        $this->assertEquals($transactionId, $response->transactionId);
+        $this->assertInstanceOf("Svea\WebPay\BuildOrder\RowBuilders\NumberedOrderRow", $response->numberedOrderRows[0]);
+        $this->assertEquals("Soft213s", $response->numberedOrderRows[0]->articleNumber);
+        $this->assertEquals("1.0", $response->numberedOrderRows[0]->quantity);
+        $this->assertEquals("st", $response->numberedOrderRows[0]->unit);
+        $this->assertEquals(3212.00, $response->numberedOrderRows[0]->amountExVat);   // amount = 401500, vat = 80300 => 3212.00 @25%
+        $this->assertEquals(25, $response->numberedOrderRows[0]->vatPercent);
+        $this->assertEquals("Soft", $response->numberedOrderRows[0]->name);
+//        $this->assertEquals( "Specification", $response->numberedOrderRows[1]->description );
+        $this->assertEquals(0, $response->numberedOrderRows[0]->vatDiscount);
+
+        $this->assertInstanceOf("Svea\WebPay\BuildOrder\RowBuilders\NumberedOrderRow", $response->numberedOrderRows[1]);
+        $this->assertEquals("07", $response->numberedOrderRows[1]->articleNumber);
+        $this->assertEquals("1.0", $response->numberedOrderRows[1]->quantity);
+        $this->assertEquals("st", $response->numberedOrderRows[1]->unit);
+        $this->assertEquals(0, $response->numberedOrderRows[1]->amountExVat);   // amount = 401500, vat = 80300 => 3212.00 @25%
+        $this->assertEquals(0, $response->numberedOrderRows[1]->vatPercent);
+        $this->assertEquals("Sits: Hatfield Beige 6", $response->numberedOrderRows[1]->name);
+//        $this->assertEquals( "Specification", $response->numberedOrderRows[1]->description );
+        $this->assertEquals(0, $response->numberedOrderRows[1]->vatDiscount);
+    }
 
     /**
      * test_query_card_transaction_not_found
@@ -51,11 +104,11 @@ class QueryTransactionIntegrationTest extends \PHPUnit_Framework_TestCase
 //            'test_manual_parsing_of_queried_payment_order_works'
 //        );
 
-        // 1. go to https://test.sveaekonomi.se/webpay-admin/admin/start.xhtml 
+        // 1. go to https://webpaypaymentgatewaystage.svea.com/webpay-admin/admin/start.xhtml
         // 2. go to verktyg -> betalning
         // 3. enter our test merchantid: 1130
         // 4. use the following xml, making sure to update to a unique customerrefno:
-        // <paymentmethod>KORTCERT</paymentmethod><currency>SEK</currency><amount>25500</amount><vat>600</vat><customerrefno>test_manual_query_card_2xz</customerrefno><returnurl>https://test.sveaekonomi.se/webpay-admin/admin/merchantresponsetest.xhtml</returnurl><orderrows><row><name>Orderrow1</name><amount>500</amount><vat>100</vat><description>Orderrow description</description><quantity>1</quantity><sku>123</sku><unit>st</unit></row><row><name>Orderrow2</name><amount>12500</amount><vat>2500</vat><description>Orderrow2 description</description><quantity>2</quantity><sku>124</sku><unit>m2</unit></row></orderrows>
+        // <paymentmethod>KORTCERT</paymentmethod><currency>SEK</currency><amount>25500</amount><vat>600</vat><customerrefno>test_manual_query_card_2xz</customerrefno><returnurl>https://webpaypaymentgatewaystage.svea.com/webpay-admin/admin/merchantresponsetest.xhtml</returnurl><orderrows><row><name>Orderrow1</name><amount>500</amount><vat>100</vat><description>Orderrow description</description><quantity>1</quantity><sku>123</sku><unit>st</unit></row><row><name>Orderrow2</name><amount>12500</amount><vat>2500</vat><description>Orderrow2 description</description><quantity>2</quantity><sku>124</sku><unit>m2</unit></row></orderrows>
         // 5. the result should be:
         // <response><transaction id="587401"><paymentmethod>KORTCERT</paymentmethod><merchantid>1130</merchantid><customerrefno>test_manual_query_card_2xz</customerrefno><amount>25500</amount><currency>SEK</currency><cardtype>VISA</cardtype><maskedcardno>444433xxxxxx1100</maskedcardno><expirymonth>02</expirymonth><expiryyear>15</expiryyear><authcode>878087</authcode></transaction><statuscode>0</statuscode></response>
 
@@ -283,11 +336,11 @@ class QueryTransactionIntegrationTest extends \PHPUnit_Framework_TestCase
 //            'test_manual_parsing_of_queried_recur_order_without_orderrows_works'
 //        );               
 
-        // 1. go to https://test.sveaekonomi.se/webpay-admin/admin/start.xhtml 
+        // 1. go to https://webpaypaymentgatewaystage.svea.com/webpay-admin/admin/start.xhtml
         // 2. go to verktyg -> betalning
         // 3. enter our test merchantid: 1130
         // 4. use the following xml, making sure to update to a unique customerrefno:
-        // <paymentmethod>KORTCERT</paymentmethod><subscriptiontype>RECURRINGCAPTURE</subscriptiontype><currency>SEK</currency><amount>500</amount><vat>100</vat><customerrefno>test_recur_NN</customerrefno><returnurl>https://test.sveaekonomi.se/webpay-admin/admin/merchantresponsetest.xhtml</returnurl>
+        // <paymentmethod>KORTCERT</paymentmethod><subscriptiontype>RECURRINGCAPTURE</subscriptiontype><currency>SEK</currency><amount>500</amount><vat>100</vat><customerrefno>test_recur_NN</customerrefno><returnurl>https://webpaypaymentgatewaystage.svea.com/webpay-admin/admin/merchantresponsetest.xhtml</returnurl>
         // 5. the result should be:
         // <response><transaction id="581497"><paymentmethod>KORTCERT</paymentmethod><merchantid>1130</merchantid><customerrefno>test_recur_1</customerrefno><amount>500</amount><currency>SEK</currency><subscriptionid>2922</subscriptionid><cardtype>VISA</cardtype><maskedcardno>444433xxxxxx1100</maskedcardno><expirymonth>02</expirymonth><expiryyear>16</expiryyear><authcode>993955</authcode></transaction><statuscode>0</statuscode></response>
 
@@ -419,7 +472,7 @@ class QueryTransactionIntegrationTest extends \PHPUnit_Framework_TestCase
         // 1. See Svea\WebPay\Test\IntegrationTest\HostedService\Payment\CardPaymentURLIntegrationTest::test_manual_CardPayment_getPaymentUrl():
         // 2. run the test, and get the subscription paymenturl from the output
         // 3. go to the paymenturl and complete the transaction.
-        // 4. go to https://test.sveaekonomi.se/webpay-admin/admin/start.xhtml
+        // 4. go to https://webpaypaymentgatewaystage.svea.com/webpay-admin/admin/start.xhtml
         // 5. retrieve the transactionid from the response in the transaction log
 
         // Set the below to match the transaction, then run the test.
@@ -596,11 +649,11 @@ class QueryTransactionIntegrationTest extends \PHPUnit_Framework_TestCase
 //            'test_manual_query_card_queryTransaction_returntype'
 //        );
 
-        // 1. go to https://test.sveaekonomi.se/webpay-admin/admin/start.xhtml 
+        // 1. go to https://webpaypaymentgatewaystage.svea.com/webpay-admin/admin/start.xhtml
         // 2. go to verktyg -> betalning
         // 3. enter our test merchantid: 1130
         // 4. use the following xml, making sure to update to a unique customerrefno:
-        // <paymentmethod>KORTCERT</paymentmethod><currency>SEK</currency><amount>25500</amount><vat>600</vat><customerrefno>test_manual_query_card_2</customerrefno><returnurl>https://test.sveaekonomi.se/webpay/admin/merchantresponsetest.xhtml</returnurl><orderrows><row><name>Orderrow1</name><amount>500</amount><vat>100</vat><description>Orderrow description</description><quantity>1</quantity><sku>123</sku><unit>st</unit></row><row><name>Orderrow2</name><amount>12500</amount><vat>2500</vat><description>Orderrow2 description</description><quantity>2</quantity><sku>124</sku><unit>m2</unit></row></orderrows>
+        // <paymentmethod>KORTCERT</paymentmethod><currency>SEK</currency><amount>25500</amount><vat>600</vat><customerrefno>test_manual_query_card_2</customerrefno><returnurl>https://webpaypaymentgatewaystage.svea.com/webpay/admin/merchantresponsetest.xhtml</returnurl><orderrows><row><name>Orderrow1</name><amount>500</amount><vat>100</vat><description>Orderrow description</description><quantity>1</quantity><sku>123</sku><unit>st</unit></row><row><name>Orderrow2</name><amount>12500</amount><vat>2500</vat><description>Orderrow2 description</description><quantity>2</quantity><sku>124</sku><unit>m2</unit></row></orderrows>
         // 5. the result should be:
         // <response><transaction id="580964"><paymentmethod>KORTCERT</paymentmethod><merchantid>1130</merchantid><customerrefno>test_manual_query_card_3</customerrefno><amount>25500</amount><currency>SEK</currency><cardtype>VISA</cardtype><maskedcardno>444433xxxxxx1100</maskedcardno><expirymonth>02</expirymonth><expiryyear>15</expiryyear><authcode>898924</authcode></transaction><statuscode>0</statuscode></response>
 

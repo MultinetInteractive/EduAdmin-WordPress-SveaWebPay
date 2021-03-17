@@ -91,6 +91,26 @@ class CreateOrderService extends CheckoutService
             }
         }
 
+        if ($order->getPartnerKey() != null)
+        {
+            $data['partnerKey'] = $order->getPartnerKey();
+        }
+
+        if ($order->getIdentityFlags() != null)
+        {
+            foreach ($order->getIdentityFlags() as $key => $identityFlag)
+            {
+                $data['identityFlags'][$identityFlag] = true;
+            }
+        }
+
+        $data['merchantData'] = $order->getMerchantData();
+
+        if($order->getRequireElectronicIdAuthentication() != null)
+        {
+            $data['requireElectronicIdAuthentication'] = $order->getRequireElectronicIdAuthentication();
+        }
+
         return $data;
     }
 }

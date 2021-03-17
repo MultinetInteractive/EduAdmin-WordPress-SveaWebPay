@@ -2,7 +2,7 @@
 
 namespace Svea\WebPay\Test\IntegrationTest\AdminService;
 
-use PHPUnit_Framework_TestCase;
+use \PHPUnit\Framework\TestCase;
 use Svea\WebPay\AdminService\GetOrdersRequest;
 use Svea\WebPay\BuildOrder\QueryOrderBuilder;
 use Svea\WebPay\Config\ConfigurationProvider;
@@ -16,7 +16,7 @@ use Svea\WebPay\WebPayItem;
 /**
  * @author Kristian Grossman-Madsen for Svea Webpay
  */
-class GetOrdersRequestIntegrationTest extends PHPUnit_Framework_TestCase
+class GetOrdersRequestIntegrationTest extends \PHPUnit\Framework\TestCase
 {
 
     /**
@@ -312,11 +312,11 @@ class GetOrdersRequestIntegrationTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("194605092222", $getOrdersResponse->customer->ssn);
         $this->assertEquals(null, $getOrdersResponse->customer->initials);
         $this->assertEquals(null, $getOrdersResponse->customer->birthDate);
-        $this->assertEquals(null, $getOrdersResponse->customer->firstname);           // not set for SE order
-        $this->assertEquals(null, $getOrdersResponse->customer->lastname);
+        $this->assertEquals("Tess", $getOrdersResponse->customer->firstname);           // not set for SE order
+        $this->assertEquals("Persson", $getOrdersResponse->customer->lastname);
         //$this->assertEquals( null, $getOrdersResponse->customer->email );
         //$this->assertEquals( null, $getOrdersResponse->customer->phonenumber );
-        $this->assertEquals("Persson, Tess T", $getOrdersResponse->customer->name);   // FullName
+        $this->assertEquals("Persson Tess T", $getOrdersResponse->customer->name);   // FullName
         $this->assertEquals("Testgatan 1", $getOrdersResponse->customer->streetAddress);
         $this->assertEquals("Testgatan 1", $getOrdersResponse->customer->street);
         $this->assertEquals("c/o Eriksson, Erik", $getOrdersResponse->customer->coAddress);
@@ -393,23 +393,23 @@ class GetOrdersRequestIntegrationTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf("Svea\WebPay\BuildOrder\RowBuilders\CompanyCustomer", $getOrdersResponse->customer);
         $this->assertEquals("194608142222", $getOrdersResponse->customer->orgNumber);
         $this->assertEquals(null, $getOrdersResponse->customer->companyVatNumber);
-        $this->assertEquals("Persson, Tess T", $getOrdersResponse->customer->companyName);
+        $this->assertEquals("Test", $getOrdersResponse->customer->companyName);
         $this->assertEquals(null, $getOrdersResponse->customer->email);
         $this->assertEquals(null, $getOrdersResponse->customer->phonenumber);
-        $this->assertEquals("Testgatan 1", $getOrdersResponse->customer->streetAddress);
-        $this->assertEquals("Testgatan 1", $getOrdersResponse->customer->street);
-        $this->assertEquals("c/o Eriksson, Erik", $getOrdersResponse->customer->coAddress);
-        $this->assertEquals("99999", $getOrdersResponse->customer->zipCode);
-        $this->assertEquals("Stan", $getOrdersResponse->customer->locality);
+        $this->assertEquals("Testaregatan 1", $getOrdersResponse->customer->streetAddress);
+        $this->assertEquals("Testaregatan 1", $getOrdersResponse->customer->street);
+        $this->assertEquals(null, $getOrdersResponse->customer->coAddress);
+        $this->assertEquals("11111", $getOrdersResponse->customer->zipCode);
+        $this->assertEquals("Solna", $getOrdersResponse->customer->locality);
     }
 
     public function test_manual_GetOrdersRequest_for_paymentplan_order()
     {
 
         // Stop here and mark this test as incomplete.
-//    $this->markTestIncomplete(
-//        'skeleton for test_manual_GetOrdersRequest_for_paymentplan_order'
-//    );
+        $this->markTestIncomplete(
+        'skeleton for test_manual_GetOrdersRequest_for_paymentplan_order'
+    );
 
         // create order
         $country = "SE";

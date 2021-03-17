@@ -8,9 +8,9 @@ use Svea\WebPay\Config\ConfigurationService;
 use Svea\WebPay\Constant\PaymentMethod;
 
 /**
- * @author Anneli Halld'n, Daniel Brolund for Svea Webpay
+ * @author Anneli Halld'n, Daniel Brolund, Fredrik Sundell for Svea Webpay
  */
-class HostedOrderValidatorTest extends \PHPUnit_Framework_TestCase
+class HostedOrderValidatorTest extends \PHPUnit\Framework\TestCase
 {
 
     /**
@@ -132,6 +132,40 @@ class HostedOrderValidatorTest extends \PHPUnit_Framework_TestCase
             ->setClientOrderNumber("34")
             ->usePayPage();
         // ->setReturnUrl("myurl.se")
+
+        $order->getPaymentForm();
+    }
+
+    /**
+     * @expectedException Svea\WebPay\BuildOrder\Validator\ValidationException
+     * @expectedExceptionMessage -unsupported currency : Currency is not supported with this payment method.
+     */
+    public function testUnsupportedCardPayCurrency()
+    {
+        $config = ConfigurationService::getDefaultConfig();
+        $builder = WebPay::createOrder($config);
+        $order = $builder
+            ->addOrderRow(TestUtil::createHostedOrderRow())
+            ->setCurrency("XXX")
+            ->setClientOrderNumber("34")
+            ->usePaymentMethod("SVEACARDPAY");
+
+        $order->getPaymentForm();
+    }
+
+    /**
+     * @expectedException Svea\WebPay\BuildOrder\Validator\ValidationException
+     * @expectedExceptionMessage -missing value : CountryCode is required for SVEACARDPAY_PF. Use function setCountryCode().
+     */
+    public function testNullCountryCodeWithCardPayPF()
+    {
+        $config = ConfigurationService::getDefaultConfig();
+        $builder = WebPay::createOrder($config);
+        $order = $builder
+            ->addOrderRow(TestUtil::createHostedOrderRow())
+            ->setCurrency("SEK")
+            ->setClientOrderNumber("34")
+            ->usePaymentMethod("SVEACARDPAY_PF");
 
         $order->getPaymentForm();
     }

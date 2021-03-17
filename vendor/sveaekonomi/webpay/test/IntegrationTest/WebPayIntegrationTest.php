@@ -3,7 +3,7 @@
 
 namespace Svea\WebPay\Test\IntegrationTest;
 
-use PHPUnit_Framework_TestCase;
+use \PHPUnit\Framework\TestCase;
 use Svea\WebPay\Config\ConfigurationService;
 use Svea\WebPay\Constant\DistributionType;
 use Svea\WebPay\Constant\PaymentMethod;
@@ -15,7 +15,7 @@ use Svea\WebPay\WebPayItem;
 /**
  * @author Kristian Grossman-Madsen for Svea Svea\WebPay\WebPay
  */
-class WebPayIntegrationTest extends PHPUnit_Framework_TestCase
+class WebPayIntegrationTest extends \PHPUnit\Framework\TestCase
 {
 
     /// Svea\WebPay\WebPay::createOrder() --------------------------------------------------
@@ -80,6 +80,9 @@ class WebPayIntegrationTest extends PHPUnit_Framework_TestCase
     // card
     public function test_createOrder_usePaymentMethod_KORTCERT_redirects_to_certitrade()
     {
+        $this->markTestIncomplete(
+            'CertiTrade no longer used'
+        );
         $config = ConfigurationService::getDefaultConfig();
         $rowFactory = new TestUtil();
         $form = WebPay::createOrder($config)
@@ -99,7 +102,7 @@ class WebPayIntegrationTest extends PHPUnit_Framework_TestCase
             ->usePaymentMethod(PaymentMethod::KORTCERT)
             ->setReturnUrl("http://myurl.se")
             ->getPaymentForm();
-        $url = "https://test.sveaekonomi.se/webpay/payment";
+        $url = "https://webpaypaymentgatewaystage.svea.com/webpay/payment";
 
         /** CURL  **/
         $fields = array('merchantid' => urlencode($form->merchantid), 'message' => urlencode($form->xmlMessageBase64), 'mac' => urlencode($form->mac));
@@ -412,6 +415,53 @@ class WebPayIntegrationTest extends PHPUnit_Framework_TestCase
         $this->assertInstanceOf("Svea\WebPay\WebService\GetPaymentPlanParams\PaymentPlanPricePerMonth", $pricesPerMonth);
 
 //        $this->assertEquals(213060, $pricesPerMonth->values[0]['campaignCode']); //don't test to be flexible
-        $this->assertEquals(2029, $pricesPerMonth->values[0]['pricePerMonth']);
+        $this->assertEquals(true, isset($pricesPerMonth->values[0]['pricePerMonth']));
+    }
+
+    public function test_Checkout_SveaConfigurationProvider()
+    {
+        $responseSE = WebPay::checkout(ConfigurationService::getTestConfig())
+            ->setCountryCode("SE")
+            ->setCurrency("SEK")
+            ->setLocale("sv-se")
+            ->setCheckoutUri("http://localhost")
+            ->setTermsUri("http://localhost")
+            ->setPushUri("http://localhost")
+            ->setConfirmationUri("http://localhost")
+            ->setClientOrderNumber("PHP_IntegrationTest_" . rand(0, 10000000))
+            ->addOrderRow(WebPayItem::orderRow()
+            ->setArticleNumber("1")
+                ->setQuantity(2)
+                ->setAmountIncVat(1000.00)
+                ->setDescription("Specification")
+                ->setName('Prod')
+                ->setUnit("st")
+                ->setVatPercent(25)
+                ->setDiscountPercent(0)
+            )->createOrder();
+
+        $this->assertEquals($responseSE['CountryCode'], "SE");
+
+        $responseNO = WebPay::checkout(ConfigurationService::getTestConfig())
+            ->setCountryCode("NO")
+            ->setCurrency("NOK")
+            ->setLocale("nn-no")
+            ->setCheckoutUri("http://localhost")
+            ->setTermsUri("http://localhost")
+            ->setPushUri("http://localhost")
+            ->setConfirmationUri("http://localhost")
+            ->setClientOrderNumber("PHP_IntegrationTest_" .rand(0, 10000000))
+            ->addOrderRow(WebPayItem::orderRow()
+            ->setArticleNumber("1")
+                ->setQuantity(2)
+                ->setAmountIncVat(1000.00)
+                ->setDescription("Specification")
+                ->setName('Prod')
+                ->setUnit("st")
+                ->setVatPercent(25)
+                ->setDiscountPercent(0)
+            )->createOrder();
+
+        $this->assertEquals($responseNO['CountryCode'], "NO");
     }
 }

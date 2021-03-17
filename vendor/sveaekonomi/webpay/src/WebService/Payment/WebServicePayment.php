@@ -6,14 +6,14 @@ use Svea\WebPay\Helper\Helper;
 use Svea\WebPay\Response\SveaResponse;
 use Svea\WebPay\WebService\SveaSoap\SveaAuth;
 use Svea\WebPay\WebService\SveaSoap\SveaOrder;
+use Svea\WebPay\WebService\SveaSoap\SveaOrderDeliveryAddress;
 use Svea\WebPay\WebService\SveaSoap\SveaRequest;
 use Svea\WebPay\WebService\SveaSoap\SveaIdentity;
 use Svea\WebPay\WebService\SveaSoap\SveaDoRequest;
 use Svea\WebPay\BuildOrder\Validator\ValidationException;
-use Svea\WebPay\WebService\Helper\WebServiceRowFormatter;
 use Svea\WebPay\WebService\SveaSoap\SveaCustomerIdentity;
 use Svea\WebPay\BuildOrder\Validator\WebServiceOrderValidator;
-use Svea\WebPay\WebService\SveaSoap\SveaCreateOrderInformation;
+use Svea\WebPay\WebService\WebServiceResponse\CreateOrderResponse;
 
 /**
  * Parent to InvoicePayment, AccountCredit and PaymentPlanPaymentHandles class
@@ -21,7 +21,7 @@ use Svea\WebPay\WebService\SveaSoap\SveaCreateOrderInformation;
  * Uses svea_soap package to build object formatted for SveaWebPay Europe Web service API
  * Object is sent with SveaDoPayment class in svea_soap package by PHP SoapClient
  *
- * @author Anneli Halld'n, Daniel Brolund for Svea Webpay
+ * @author Anneli Halld'n, Daniel Brolund, Fredrik Sundell for Svea Webpay
  */
 
 class WebServicePayment
@@ -41,23 +41,23 @@ class WebServicePayment
 
     /**
      * Transforms object to array and sends it to SveaWebPay Europe Web service API by php SoapClient
-     * @return CreateOrderEuResponse
+     * @return CreateOrderResponse
      * @throws ValidationException
      */
     public function doRequest()
     {
         $object = $this->prepareRequest();
-        $request = new SveaDoRequest($this->order->conf, $this->orderType);
-        $svea_req = $request->CreateOrderEu($object);
 
-        $response = new SveaResponse($svea_req, "");
+        $request = new SveaDoRequest($this->order->conf, $this->orderType, "CreateOrderEu", $object, $this->order->logging);
+        $response = new SveaResponse($request->result['requestResult'], "", NULL, NULL, isset($request->result['logs']) ? $request->result['logs'] : NULL);
+
 
         return $response->getResponse();
     }
 
     /**
      * Rebuild $order with svea_soap package to be in right format for SveaWebPay Europe Web service API
-     * @return prepared SveaRequest
+     * @return SveaRequest SveaRequest
      * @throws ValidationException
      */
     public function prepareRequest()
@@ -75,7 +75,7 @@ class WebServicePayment
         // create soap order object, set authorization
         $sveaOrder = new SveaOrder;
         $sveaOrder->Auth = $this->getPasswordBasedAuthorization();
-        //make orderrows and put in CreateOrderInfromation
+        //make orderrows and put in CreateOrderInformation
         $orderinformation = $this->formatOrderInformationWithOrderRows($this->order->orderRows);
 
         //parallel ways of creating customer
@@ -88,6 +88,13 @@ class WebServicePayment
         $orderinformation->ClientOrderNumber = $this->order->clientOrderNumber;
         $orderinformation->OrderDate = $this->order->orderDate;
         $orderinformation->CustomerReference = $this->order->customerReference;
+        $orderinformation->PeppolId = $this->order->peppolId;
+
+        if(isset($this->order->orderDeliveryAddress))
+        {
+            $orderinformation->OrderDeliveryAddress = $this->formatOrderDeliveryAddress();
+
+        }
         $sveaOrder->CreateOrderInformation = $this->setOrderType($orderinformation);
 
         $object = new SveaRequest();
@@ -118,10 +125,27 @@ class WebServicePayment
         return $auth;
     }
 
+    /*
+     *
+     */
+    private function formatOrderDeliveryAddress()
+    {
+        $formattedOrderDeliveryAddress = new SveaOrderDeliveryAddress();
 
+        $formattedOrderDeliveryAddress->FullName = isset($this->order->orderDeliveryAddress->fullName) ? $this->order->orderDeliveryAddress->fullName : "";
+        $formattedOrderDeliveryAddress->FirstName = isset($this->order->orderDeliveryAddress->firstName) ? $this->order->orderDeliveryAddress->firstName : "";
+        $formattedOrderDeliveryAddress->LastName = isset($this->order->orderDeliveryAddress->lastName) ? $this->order->orderDeliveryAddress->lastName : "";
+        $formattedOrderDeliveryAddress->CoAddress = isset($this->order->orderDeliveryAddress->coAddress) ? $this->order->orderDeliveryAddress->coAddress : "";
+        $formattedOrderDeliveryAddress->ZipCode = isset($this->order->orderDeliveryAddress->zipCode) ? $this->order->orderDeliveryAddress->zipCode : "";
+        $formattedOrderDeliveryAddress->HouseNumber = isset($this->order->orderDeliveryAddress->houseNumber) ? $this->order->orderDeliveryAddress->houseNumber : "";
+        $formattedOrderDeliveryAddress->Locality = isset($this->order->orderDeliveryAddress->locality) ? $this->order->orderDeliveryAddress->locality : "";
+        $formattedOrderDeliveryAddress->CountryCode = isset($this->order->orderDeliveryAddress->countryCode) ? $this->order->orderDeliveryAddress->countryCode : "";
+
+        return $formattedOrderDeliveryAddress;
+    }
     /**
      * if CustomerIdentity is created by addCustomerDetails()
-     * @return \SveaCustomerIdentity
+     * @return SveaCustomerIdentity
      */
     public function formatCustomerDetails()
     {
@@ -191,7 +215,7 @@ class WebServicePayment
 
     /**
      * Format Customer Identity with svea_soap package
-     * @return \SveaCustomerIdentity
+     * @return SveaCustomerIdentity
      */
     private function formatCustomerIdentity()
     {
@@ -258,7 +282,8 @@ class WebServicePayment
 
     /**
      * Get calculated totals before sending the request
-     * @return Array of the rounded sums of all orderrows as it will be sent to Svea
+     * Returns Array of the rounded sums of all orderrows as it will be sent to Svea
+     * @returns array
      */
     public function getRequestTotals()
     {

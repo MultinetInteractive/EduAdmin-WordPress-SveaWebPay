@@ -1,7 +1,7 @@
 <?php
 namespace Svea\WebPay\Test\IntegrationTest\WebService\GetPaymentPlanParams;
 
-use PHPUnit_Framework_TestCase;
+use \PHPUnit\Framework\TestCase;
 use Svea\WebPay\Config\ConfigurationService;
 use Svea\WebPay\WebService\GetPaymentPlanParams\GetPaymentPlanParams as GetPaymentPlanParams;
 use Svea\WebPay\WebService\GetPaymentPlanParams\PaymentPlanPricePerMonth as PaymentPlanPricePerMonth;
@@ -10,7 +10,7 @@ use Svea\WebPay\WebService\GetPaymentPlanParams\PaymentPlanPricePerMonth as Paym
 /**
  * @author Jonas Lith, Kristian Grossman-Madsen
  */
-class PaymentPlanPricePerMonthTest extends PHPUnit_Framework_TestCase
+class PaymentPlanPricePerMonthTest extends \PHPUnit\Framework\TestCase
 {
 
     private function getGetPaymentPlanParamsResponseForTesting()
@@ -29,7 +29,7 @@ class PaymentPlanPricePerMonthTest extends PHPUnit_Framework_TestCase
         $params = $this->getGetPaymentPlanParamsResponseForTesting();
         $response = new PaymentPlanPricePerMonth(2000, $params);
 //        $this->assertEquals(213060, $response->values[0]['campaignCode']);//don't test to be flexible
-        $this->assertEquals(2029, $response->values[0]['pricePerMonth']);
+        $this->assertEquals(83, $response->values[0]['pricePerMonth']);
     }
 
     function testBuildPriceCalculatorWithLowPrice_should_not_return_anything_if_price_is_less_than_all_campaign_min_prices()
@@ -44,5 +44,12 @@ class PaymentPlanPricePerMonthTest extends PHPUnit_Framework_TestCase
         $params = $this->getGetPaymentPlanParamsResponseForTesting();
         $response = new PaymentPlanPricePerMonth(200, $params, true);
         $this->assertNotEmpty($response->values);
+    }
+
+    function testPaymentPlanPricePerMonth_returns_paymentPlanType()
+    {
+        $params = $this->getGetPaymentPlanParamsResponseForTesting();
+        $response = new PaymentPlanPricePerMonth(200, $params, true);
+        $this->assertArrayHasKey("paymentPlanType", $response->values[0]);
     }
 }

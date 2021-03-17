@@ -12,42 +12,24 @@ use Svea\WebPay\Constant\PaymentMethod;
  * All functions named test...() will run as tests in PHP-unit framework
  * @author Anneli Halld'n, Daniel Brolund for Svea Webpay
  */
-class NewOrderBuilderTest extends \PHPUnit_Framework_TestCase
+class NewOrderBuilderTest extends \PHPUnit\Framework\TestCase
 {
 
     public function testNewInvoiceOrderCompanyAddresselector()
     {
-        $addresselector = $this->getAddressForTesting();
         $config = ConfigurationService::getDefaultConfig();
         $request = WebPay::createOrder($config);
         $request = $request
             ->addOrderRow(TestUtil::createOrderRow());
         $request = $request
-            ->addCustomerDetails(WebPayItem::companyCustomer()->setNationalIdNumber(4608142222)->setAddressSelector($addresselector))
+            ->addCustomerDetails(WebPayItem::companyCustomer()->setNationalIdNumber(4608142222)->setAddressSelector("4446e9b2501d4cfca6cc888bf5960379"))
             ->setCountryCode("SE")
             ->setCustomerReference("33")
             ->setOrderDate("2012-12-12")
             ->setCurrency("SEK")
             ->useInvoicePayment()// returnerar InvoiceOrder object
             ->prepareRequest();
-        $this->assertEquals($addresselector, $request->request->CreateOrderInformation->AddressSelector);
-    }
-
-    /**
-     * getAddressSelector for test
-     */
-    public function getAddressForTesting()
-    {
-        $config = ConfigurationService::getDefaultConfig();
-        $addressRequest = WebPay::getAddresses($config);
-        $request = $addressRequest
-            ->setOrderTypeInvoice()
-            ->setCountryCode("SE")
-            ->setCustomerIdentifier(4608142222)
-            ->getCompanyAddresses()
-            ->doRequest();
-
-        return $request->customerIdentity[0]->addressSelector;
+        $this->assertEquals("4446e9b2501d4cfca6cc888bf5960379", $request->request->CreateOrderInformation->AddressSelector);
     }
 
     public function testNewInvoiceOrderWithOrderRow()

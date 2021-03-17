@@ -5,7 +5,7 @@ namespace Svea\WebPay\Test\UnitTest\WebService\HandleOrder;
 use Svea\WebPay\WebPay;
 use Svea\WebPay\WebPayItem;
 use Svea\WebPay\Test\TestUtil;
-use PHPUnit_Framework_TestCase;
+use \PHPUnit\Framework\TestCase;
 use Svea\WebPay\Config\ConfigurationService;
 use Svea\WebPay\Constant\DistributionType;
 
@@ -13,7 +13,7 @@ use Svea\WebPay\Constant\DistributionType;
 /**
  * @author Anneli Halld'n, Daniel Brolund for Svea Webpay
  */
-class DeliverOrderTest extends PHPUnit_Framework_TestCase
+class DeliverOrderTest extends \PHPUnit\Framework\TestCase
 {
 
     public function testBuildRequest()
@@ -41,6 +41,23 @@ class DeliverOrderTest extends PHPUnit_Framework_TestCase
             ->prepareRequest();
 
         $this->assertEquals('Post', $request->request->DeliverOrderInformation->DeliverInvoiceDetails->InvoiceDistributionType);
+    }
+
+    public function testDeliverInvoiceDistributionTypeEInvoiceB2B()
+    {
+        $config = ConfigurationService::getDefaultConfig();
+        $orderBuilder = WebPay::deliverOrder($config);
+        $request = $orderBuilder
+            ->addOrderRow(TestUtil::createOrderRow())
+            ->setOrderId("id")
+            ->setNumberOfCreditDays(1)
+            ->setCountryCode("NO")
+            ->setInvoiceDistributionType(DistributionType::EINVOICEB2B)
+            ->setCreditInvoice("id")
+            ->deliverInvoiceOrder()
+            ->prepareRequest();
+
+        $this->assertEquals('EInvoiceB2B', $request->request->DeliverOrderInformation->DeliverInvoiceDetails->InvoiceDistributionType);
     }
 
     public function testDeliverInvoiceOrder()
