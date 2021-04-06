@@ -106,7 +106,7 @@ class EduSveaWebPayBaseConfig implements \Svea\WebPay\Config\ConfigurationProvid
 	 *
 	 * @return string
 	 */
-	public function getCheckoutMerchantId() {
+	public function getCheckoutMerchantId($country = NULL) {
 		$merchantId = $this->plugin->get_option( 'merchant_key', '' );
 
 		return $merchantId;
@@ -117,7 +117,7 @@ class EduSveaWebPayBaseConfig implements \Svea\WebPay\Config\ConfigurationProvid
 	 *
 	 * @return string
 	 */
-	public function getCheckoutSecret() {
+	public function getCheckoutSecret($country = NULL) {
 		$secret = $this->plugin->get_option( 'merchant_secret', '' );
 
 		return $secret;

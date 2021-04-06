@@ -33,7 +33,7 @@ if ( ! class_exists( 'EDU_SveaWebPay' ) ):
 		}
 
 		/**
-		 * @param $bookingInfo EduAdminBookingInfo
+		 * @param $bookingInfo EduAdmin_BookingInfo|null $bookingInfo
 		 */
 		public function intercept_booking( $bookingInfo = null ) {
 			if ( 'no' === $this->get_option( 'enabled', 'no' ) ) {
@@ -108,31 +108,13 @@ if ( ! class_exists( 'EDU_SveaWebPay' ) ):
 
 				$ebi = new EduAdminBookingInfo( $eventBooking, $_customer, $_contact );
 
-				$countries = EDU()->api->GetCountries( EDU()->get_token(), 'Swedish' );
-
-				$selectedCountry = 'SE';
-
-				$invoiceCountry = $ebi->Customer->InvoiceCountry;
-				if ( empty( $invoiceCountry ) ) {
-					$invoiceCountry = $ebi->Customer->Country;
-				}
-
-				foreach ( $countries as $country ) {
-					if ( $invoiceCountry == $country->CountryName ) {
-						$selectedCountry = $country->CountryCode;
-						break;
-					}
-				}
-
 				if ( 'no' !== $this->get_option( 'testrun', 'no' ) ) {
 					$wpConfig = new EduSveaWebPayTestConfig( $this );
 				} else {
 					$wpConfig = new EduSveaWebPayProductionConfig( $this );
 				}
 
-				//$response = ( new SveaResponse( $_REQUEST, $selectedCountry, $wpConfig ) )->getResponse();
-
-				$sveaOrderId = get_transient( 'eduadmin-sveaorderid-' . $ebi->EventBooking->EventCustomerLnkID, 0 );
+				$sveaOrderId = get_transient( 'eduadmin-sveaorderid-' . $ebi->EventBooking->EventCustomerLnkID );
 
 				if ( $sveaOrderId > 0 ) {
 					$wpOrder = WebPay::checkout( $wpConfig );
@@ -160,7 +142,7 @@ if ( ! class_exists( 'EDU_SveaWebPay' ) ):
 		}
 
 		/**
-		 * @param $bookingInfo EduAdminBookingInfo
+		 * @param $bookingInfo EduAdmin_BookingInfo|null $bookingInfo
 		 */
 		public function process_booking( $bookingInfo = null ) {
 			if ( 'no' === $this->get_option( 'enabled', 'no' ) ) {
@@ -169,7 +151,10 @@ if ( ! class_exists( 'EDU_SveaWebPay' ) ):
 			if ( isset( $_POST['act'] ) && 'bookCourse' === $_POST['act'] ) {
 				$bookingInfo->NoRedirect = true;
 
-				$countries = EDU()->api->GetCountries( EDU()->get_token(), 'Swedish' );
+				$countries = EDUAPI()->OData->Countries->Search();
+
+				$organization     = EDUAPIHelper()->GetOrganization();
+				$purchase_country = $organization["CountryCode"];
 
 				$selectedCountry = 'SE';
 				$selectedLocale  = 'sv-SE';
@@ -180,18 +165,16 @@ if ( ! class_exists( 'EDU_SveaWebPay' ) ):
 				}
 
 				foreach ( $countries as $country ) {
-					if ( $invoiceCountry == $country->CountryName ) {
-						$selectedCountry = $country->CountryCode;
-						if ( ! empty( $country->CultureName ) ) {
-							$selectedLocale = $country->CultureName;
+					if ( $invoiceCountry == $country['CountryName'] ) {
+						$selectedCountry = $country['CountryCode'];
+						if ( ! empty( $country['CultureName'] ) ) {
+							$selectedLocale = $country['CultureName'];
 						}
 						break;
 					}
 				}
 
-				//$selectedLocale = explode( '-', $selectedLocale )[0];
-
-				$currency = get_option( 'eduadmin-currency', 'SEK' );
+				$currency = EDU()->get_option( 'eduadmin-currency', 'SEK' );
 
 				if ( 'no' !== $this->get_option( 'testrun', 'no' ) ) {
 					$wpConfig = new EduSveaWebPayTestConfig( $this );
@@ -275,12 +258,9 @@ if ( ! class_exists( 'EDU_SveaWebPay' ) ):
 
 				$defaultTermsUrl = get_option( 'eduadmin-bookingTermsLink' );
 
-				//$defaultCheckoutUrl = $surl . $_SERVER['REQUEST_URI'];
-
 				$wpBuild = $wpOrder
 					->setCurrency( $currency )
 					->setCountryCode( $selectedCountry )
-					//->setOrderDate( date( 'c' ) )
 					->setClientOrderNumber( $bookingInfo->EventBooking->EventCustomerLnkID )
 					->addOrderRow( $orderRow )
 					//->addCustomerDetails( $customer )
@@ -293,7 +273,6 @@ if ( ! class_exists( 'EDU_SveaWebPay' ) ):
 					->setConfirmationUri( $defaultThankYou )
 					->setPushUri( $defaultPushUrl )
 					->setCheckoutUri( $defaultCancel ); // We have no "checkout"-url.. So we just cancel the booking instead.
-				//$wpForm  = $wpBuild->getPaymentUrl();
 				$wpForm = $wpBuild->createOrder();
 
 				set_transient( 'eduadmin-sveaorderid-' . $bookingInfo->EventBooking->EventCustomerLnkID, $wpForm['OrderId'], HOUR_IN_SECONDS );
@@ -301,17 +280,6 @@ if ( ! class_exists( 'EDU_SveaWebPay' ) ):
 				if ( array_key_exists( 'Gui', $wpForm ) ) {
 					echo $wpForm['Gui']['Snippet'];
 				}
-				/*if ( $wpForm->accepted ) {
-					if ( 'no' === $this->get_option( 'testrun', 'no' ) ) {
-						echo '<script type="text/javascript">location.href = "' . $wpForm->url . '";</script>';
-					} else {
-						echo '<script type="text/javascript">location.href = "' . $wpForm->testurl . '";</script>';
-					}
-				} else {
-					add_filter( 'edu-booking-error', function( $errors ) use ( &$wpForm ) {
-						$errors[] = $wpForm->errormessage;
-					} );
-				}*/
 			}
 		}
 	}

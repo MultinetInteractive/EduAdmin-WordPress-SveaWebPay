@@ -6,7 +6,7 @@
     'aliases' => 
     array (
     ),
-    'reference' => 'd2e04db24ec0002685123da1d2c44737560e7f5a',
+    'reference' => 'f95cb927b3e6413f89ca531e630fa47c18a41959',
     'name' => 'multinetinteractive/eduadmin-wordpress-sveawebpay',
   ),
   'versions' => 
@@ -27,7 +27,7 @@
       'aliases' => 
       array (
       ),
-      'reference' => 'd2e04db24ec0002685123da1d2c44737560e7f5a',
+      'reference' => 'f95cb927b3e6413f89ca531e630fa47c18a41959',
     ),
     'roundcube/plugin-installer' => 
     array (
@@ -45,12 +45,12 @@
     ),
     'sveaekonomi/checkout' => 
     array (
-      'pretty_version' => '1.2.3',
-      'version' => '1.2.3.0',
+      'pretty_version' => '1.3.0',
+      'version' => '1.3.0.0',
       'aliases' => 
       array (
       ),
-      'reference' => '12fa71b0d3a38685ead53d3c97f83f3bc59c3b62',
+      'reference' => 'c5d6450a6b8b56637b52c6dac06625dc584974cf',
     ),
     'sveaekonomi/webpay' => 
     array (

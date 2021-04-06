@@ -6,5 +6,5 @@ vendor/**/.circleci
 vendor/**/docs/
 vendor/**/test/
 vendor/**/tests/
-vendoer/**/example/
-vendoer/**/examples/
+vendor/**/example/
+vendor/**/examples/
