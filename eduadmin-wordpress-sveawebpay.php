@@ -6,11 +6,11 @@ defined( 'ABSPATH' ) or die( 'This plugin must be run within the scope of WordPr
  * Plugin URI:	http://www.eduadmin.se
  * Description:	EduAdmin plugin to allow visitors to book courses at your website
  * Tags:	booking, participants, courses, events, eduadmin, lega online
- * Version:	1.0.0
+ * Version:	2.0.0
  * GitHub Plugin URI: multinetinteractive/eduadmin-wordpress-sveawebpay
  * GitHub Plugin URI: https://github.com/multinetinteractive/eduadmin-wordpress-sveawebpay
- * Requires at least: 3.0
- * Tested up to: 4.7.4
+ * Requires at least: 5.0
+ * Tested up to: 5.6.2
  * Author:	Chris Gårdenberg, MultiNet Interactive AB
  * Author URI:	http://www.multinet.se
  * License:	GPL3
@@ -19,7 +19,7 @@ defined( 'ABSPATH' ) or die( 'This plugin must be run within the scope of WordPr
  */
 /*
     EduAdmin Booking plugin
-    Copyright (C) 2015-2017 Chris Gårdenberg, MultiNet Interactive AB
+    Copyright (C) 2015-2021 Chris Gårdenberg, MultiNet Interactive AB
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -38,11 +38,11 @@ defined( 'ABSPATH' ) or die( 'This plugin must be run within the scope of WordPr
 add_action( 'admin_init', 'checkForEduAdminPlugin' );
 function checkForEduAdminPlugin() {
 	if ( is_admin() && current_user_can( 'activate_plugins' ) && ! is_plugin_active( 'eduadmin/eduadmin.php' ) ) {
-		add_action( 'admin_notices', function() {
+		add_action( 'admin_notices', function () {
 			?>
-			<div class="error">
-			<p><?php _e( 'This plugin requires the EduAdmin-WordPress-plugin to be installed and activated.', 'eduadmin-sveawebpay' ); ?></p>
-			</div><?php
+            <div class="error">
+            <p><?php _e( 'This plugin requires the EduAdmin-WordPress-plugin to be installed and activated.', 'eduadmin-sveawebpay' ); ?></p>
+            </div><?php
 		} );
 		deactivate_plugins( plugin_basename( __FILE__ ) );
 

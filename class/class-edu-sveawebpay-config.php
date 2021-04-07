@@ -18,10 +18,10 @@ class EduSveaWebPayBaseConfig implements \Svea\WebPay\Config\ConfigurationProvid
 	/**
 	 * fetch username, used with invoice or payment plan (i.e. Svea WebService Europe API)
 	 *
-	 * @return string
-	 *
-	 * @param string $type    Svea\WebPay\Config\ConfigurationProvider::INVOICE_TYPE, ::PAYMENTPLAN_TYPE can be used if needed to match different configuration settings
+	 * @param string $type Svea\WebPay\Config\ConfigurationProvider::INVOICE_TYPE, ::PAYMENTPLAN_TYPE can be used if needed to match different configuration settings
 	 * @param string $country iso3166 alpha-2 CountryCode, eg. SE, NO, DK, FI, NL, DE can be used if needed to match different configuration settings
+	 *
+	 * @return string
 	 *
 	 * @throws \Svea\WebPay\HostedService\Helper\InvalidTypeException  in case of unsupported $type
 	 * @throws \Svea\WebPay\HostedService\Helper\InvalidCountryException  in case of unsupported $country
@@ -33,10 +33,10 @@ class EduSveaWebPayBaseConfig implements \Svea\WebPay\Config\ConfigurationProvid
 	/**
 	 * fetch password, used with invoice or payment plan (i.e. Svea WebService Europe API)
 	 *
-	 * @return string
-	 *
-	 * @param string $type    Svea\WebPay\Config\ConfigurationProvider::INVOICE_TYPE, ::PAYMENTPLAN_TYPE can be used if needed to match different configuration settings
+	 * @param string $type Svea\WebPay\Config\ConfigurationProvider::INVOICE_TYPE, ::PAYMENTPLAN_TYPE can be used if needed to match different configuration settings
 	 * @param string $country iso3166 alpha-2 CountryCode, eg. SE, NO, DK, FI, NL, DE can be used if needed to match different configuration settings
+	 *
+	 * @return string
 	 *
 	 * @throws \Svea\WebPay\HostedService\Helper\InvalidTypeException  in case of unsupported $type
 	 * @throws \Svea\WebPay\HostedService\Helper\InvalidCountryException  in case of unsupported $country
@@ -48,10 +48,10 @@ class EduSveaWebPayBaseConfig implements \Svea\WebPay\Config\ConfigurationProvid
 	/**
 	 * fetch client number, used with invoice or payment plan (i.e. Svea WebService Europe API)
 	 *
-	 * @return \Svea\WebPay\Config\ClientNumber
-	 *
-	 * @param string $type    Svea\WebPay\Config\ConfigurationProvider::INVOICE_TYPE, ::PAYMENTPLAN_TYPE can be used if needed to match different configuration settings
+	 * @param string $type Svea\WebPay\Config\ConfigurationProvider::INVOICE_TYPE, ::PAYMENTPLAN_TYPE can be used if needed to match different configuration settings
 	 * @param string $country iso3166 alpha-2 CountryCode, eg. SE, NO, DK, FI, NL, DE can be used if needed to match different configuration settings
+	 *
+	 * @return \Svea\WebPay\Config\ClientNumber
 	 *
 	 * @throws \Svea\WebPay\HostedService\Helper\InvalidTypeException  in case of unsupported $type
 	 * @throws \Svea\WebPay\HostedService\Helper\InvalidCountryException  in case of unsupported $country
@@ -63,10 +63,11 @@ class EduSveaWebPayBaseConfig implements \Svea\WebPay\Config\ConfigurationProvid
 	/**
 	 * fetch merchant id, used with card or direct bank payments (i.e. Svea Hosted Web Service API)
 	 *
+	 * @param string $type Svea\WebPay\Config\ConfigurationProvider::INVOICE_TYPE, ::PAYMENTPLAN_TYPE can be used if needed to match different configuration settings
+	 * @param string $country CountryCode eg. SE, NO, DK, FI, NL, DE
+	 *
 	 * @return string
 	 *
-	 * @param string $type    Svea\WebPay\Config\ConfigurationProvider::INVOICE_TYPE, ::PAYMENTPLAN_TYPE can be used if needed to match different configuration settings
-	 * @param string $country CountryCode eg. SE, NO, DK, FI, NL, DE
 	 */
 	public function getMerchantId( $type, $country ) {
 		$merchantId = $this->plugin->get_option( 'merchant_key', '' );
@@ -77,10 +78,11 @@ class EduSveaWebPayBaseConfig implements \Svea\WebPay\Config\ConfigurationProvid
 	/**
 	 * fetch secret word, used with card or direct bank payments (i.e. Svea Hosted Web Service API)
 	 *
+	 * @param string $type Svea\WebPay\Config\ConfigurationProvider::INVOICE_TYPE, ::PAYMENTPLAN_TYPE can be used if needed to match different configuration settings
+	 * @param string $country CountryCode eg. SE, NO, DK, FI, NL, DE
+	 *
 	 * @return string
 	 *
-	 * @param string $type    Svea\WebPay\Config\ConfigurationProvider::INVOICE_TYPE, ::PAYMENTPLAN_TYPE can be used if needed to match different configuration settings
-	 * @param string $country CountryCode eg. SE, NO, DK, FI, NL, DE
 	 */
 	public function getSecret( $type, $country ) {
 		$secret = $this->plugin->get_option( 'merchant_secret', '' );
@@ -94,8 +96,8 @@ class EduSveaWebPayBaseConfig implements \Svea\WebPay\Config\ConfigurationProvid
 	 *
 	 * @param string $type one of Svea\WebPay\Config\ConfigurationProvider::HOSTED_TYPE, ::INVOICE_TYPE, ::PAYMENTPLAN_TYPE, ::HOSTED_ADMIN_TYPE, ::ADMIN_TYPE
 	 *
-	 * @throws Exception
 	 * @return string
+	 * @throws Exception
 	 */
 
 	public function getEndPoint( $type ) { /* Defined in subclasses */
@@ -106,7 +108,7 @@ class EduSveaWebPayBaseConfig implements \Svea\WebPay\Config\ConfigurationProvid
 	 *
 	 * @return string
 	 */
-	public function getCheckoutMerchantId($country = NULL) {
+	public function getCheckoutMerchantId( $country = null ) {
 		$merchantId = $this->plugin->get_option( 'merchant_key', '' );
 
 		return $merchantId;
@@ -117,7 +119,7 @@ class EduSveaWebPayBaseConfig implements \Svea\WebPay\Config\ConfigurationProvid
 	 *
 	 * @return string
 	 */
-	public function getCheckoutSecret($country = NULL) {
+	public function getCheckoutSecret( $country = null ) {
 		$secret = $this->plugin->get_option( 'merchant_secret', '' );
 
 		return $secret;
@@ -140,8 +142,8 @@ class EduSveaWebPayProductionConfig extends EduSveaWebPayBaseConfig {
 	 *
 	 * @param string $type one of Svea\WebPay\Config\ConfigurationProvider::HOSTED_TYPE, ::INVOICE_TYPE, ::PAYMENTPLAN_TYPE, ::HOSTED_ADMIN_TYPE, ::ADMIN_TYPE
 	 *
-	 * @throws Exception
 	 * @return string
+	 * @throws Exception
 	 */
 
 	public function getEndPoint( $type ) {
@@ -177,8 +179,8 @@ class EduSveaWebPayTestConfig extends EduSveaWebPayBaseConfig {
 	 *
 	 * @param string $type one of Svea\WebPay\Config\ConfigurationProvider::HOSTED_TYPE, ::INVOICE_TYPE, ::PAYMENTPLAN_TYPE, ::HOSTED_ADMIN_TYPE, ::ADMIN_TYPE
 	 *
-	 * @throws Exception
 	 * @return string
+	 * @throws Exception
 	 */
 	public function getEndPoint( $type ) {
 		switch ( strtoupper( $type ) ) {
