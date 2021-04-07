@@ -144,9 +144,15 @@ if ( ! class_exists( 'EDU_SveaWebPay' ) ):
 				$booking_id           = intval( $_GET['booking_id'] );
 				$programme_booking_id = intval( $_GET['programme_booking_id'] );
 
-				$this->update_booking( intval( $_GET['edu-thankyou'] ), $booking_id, $programme_booking_id );
+				$deleted = $this->update_booking( intval( EDU()->session['svea-order-id'] ), $booking_id, $programme_booking_id );
 
 				EDU()->session['svea-order-id'] = null;
+
+				if ( $deleted ) {
+					@wp_redirect( get_home_url() );
+					echo "<script type='text/javascript>location.href = '" . esc_js( get_home_url() ) . "';</script>";
+					exit( 0 );
+				}
 			}
 		}
 
@@ -294,7 +300,6 @@ if ( ! class_exists( 'EDU_SveaWebPay' ) ):
 					'booking_id'           => $booking_id,
 					'programme_booking_id' => $programme_booking_id,
 					'edu-valid-form'       => wp_create_nonce( 'edu-booking-confirm' ),
-					'svea_order_id'        => '{checkout.order.uri}',
 					'act'                  => 'paymentCompleted',
 				),
 				@get_page_link( get_option( 'eduadmin-thankYouPage', '/' ) )
@@ -306,7 +311,6 @@ if ( ! class_exists( 'EDU_SveaWebPay' ) ):
 					'svea'                 => '1',
 					'booking_id'           => $booking_id,
 					'programme_booking_id' => $programme_booking_id,
-					'svea_order_id'        => '{checkout.order.uri}',
 					'status'               => 'cancel'
 				),
 				$current_url
@@ -344,18 +348,41 @@ if ( ! class_exists( 'EDU_SveaWebPay' ) ):
 		}
 
 		public function process_paymentstatus() {
-			if ( ! empty( $_GET['svea_order_id'] ) && ! empty( $_GET['status'] ) ) {
+			if ( ! empty( $_GET['svea_order_id'] ) && intval( $_GET['svea_order_id'] ) != 0 && ! empty( $_GET['status'] ) ) {
 
 				$booking_id           = intval( $_GET['booking_id'] );
 				$programme_booking_id = intval( $_GET['programme_booking_id'] );
 
-				$this->update_booking( intval( $_GET['edu-thankyou'] ), $booking_id, $programme_booking_id );
+				$this->update_booking( intval( $_GET['svea_order_id'] ), $booking_id, $programme_booking_id );
 
 				exit( 0 );
 			}
+
+			if ( isset( $_REQUEST['edu-thankyou'] ) && isset( $_REQUEST['svea'] ) && ! empty( $_GET['status'] ) ) {
+				$booking_id           = intval( $_GET['booking_id'] );
+				$programme_booking_id = intval( $_GET['programme_booking_id'] );
+
+				$deleted = $this->update_booking( intval( EDU()->session['svea-order-id'] ), $booking_id, $programme_booking_id );
+
+				EDU()->session['svea-order-id'] = null;
+
+				if ( $deleted ) {
+					@wp_redirect( get_home_url() );
+					echo "<script type='text/javascript>location.href = '" . esc_js( get_home_url() ) . "';</script>";
+					exit( 0 );
+				}
+			}
 		}
 
-		private function update_booking( $ecl_id, $booking_id, $programme_booking_id ) {
+		/**
+		 * @param $order_id numeric SVEA WebPay OrderId
+		 * @param $booking_id
+		 * @param $programme_booking_id
+		 *
+		 * @return bool If the booking was deleted, due to cancellation
+		 * @throws \Svea\WebPay\BuildOrder\Validator\ValidationException
+		 */
+		private function update_booking( $order_id, $booking_id, $programme_booking_id ) {
 			if ( 'no' !== $this->get_option( 'testrun', 'no' ) ) {
 				$wpConfig = new EduSveaWebPayTestConfig( $this );
 			} else {
@@ -363,19 +390,27 @@ if ( ! class_exists( 'EDU_SveaWebPay' ) ):
 			}
 
 			$wpOrder = WebPay::checkout( $wpConfig );
-			$wpOrder->setCheckoutOrderId( $ecl_id );
+			$wpOrder->setCheckoutOrderId( $order_id );
 
 			$order = $wpOrder->getOrder();
+
+			$delete_booking = false;
 
 			$patch_booking                  = new stdClass();
 			$patch_booking->PaymentMethodId = 2;
 
 			if ( 'Cancelled' === $order['Status'] ) {
 				$patch_booking->Paid = false;
+				$delete_booking      = true;
 			} else if ( 'Final' === $order['Status'] ) {
 				$patch_booking->Paid = true;
 			} else if ( 'Created' === $order['Status'] ) {
 				$patch_booking->Paid = false;
+			}
+
+			if ( isset( $_GET['status'] ) && 'cancel' === $_GET['status'] ) {
+				$patch_booking->Paid = false;
+				$delete_booking      = true;
 			}
 
 			if ( $booking_id > 0 ) {
@@ -383,14 +418,25 @@ if ( ! class_exists( 'EDU_SveaWebPay' ) ):
 					$booking_id,
 					$patch_booking
 				);
+
+				if ( $delete_booking ) {
+					EDUAPI()->REST->Booking->DeleteBooking( $booking_id );
+				}
 			}
 
 			if ( $programme_booking_id > 0 ) {
+
 				EDUAPI()->REST->ProgrammeBooking->PatchBooking(
 					$programme_booking_id,
 					$patch_booking
 				);
+
+				if ( $delete_booking ) {
+					EDUAPI()->REST->ProgrammeBooking->DeleteBooking( $programme_booking_id );
+				}
 			}
+
+			return $delete_booking;
 		}
 	}
 
