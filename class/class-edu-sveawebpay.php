@@ -21,6 +21,7 @@ if ( ! class_exists( 'EDU_SveaWebPay' ) ):
 			$this->id          = 'eduadmin-sveawebpay';
 			$this->displayName = __( 'Svea Webpay (Checkout)', 'eduadmin-sveawebpay' );
 			$this->description = '';
+			$this->type        = 'payment';
 
 			$this->init_form_fields();
 			$this->init_settings();
