@@ -37,7 +37,7 @@ defined( 'ABSPATH' ) or die( 'This plugin must be run within the scope of WordPr
 
 add_action( 'admin_init', 'checkForEduAdminPlugin' );
 function checkForEduAdminPlugin() {
-	if ( is_admin() && current_user_can( 'activate_plugins' ) && ! is_plugin_active( 'eduadmin/eduadmin.php' ) ) {
+	if ( is_admin() && current_user_can( 'activate_plugins' ) && ( ! is_plugin_active( 'eduadmin-booking/eduadmin.php' ) && ! is_plugin_active( 'eduadmin/eduadmin.php' ) ) ) {
 		add_action( 'admin_notices', function () {
 			?>
             <div class="error">
