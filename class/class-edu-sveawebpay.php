@@ -149,9 +149,7 @@ if ( ! class_exists( 'EDU_SveaWebPay' ) ):
 				EDU()->session['svea-order-id'] = null;
 
 				if ( $deleted ) {
-					@wp_redirect( get_home_url() );
-					echo "<script type='text/javascript>location.href = '" . esc_js( get_home_url() ) . "';</script>";
-					exit( 0 );
+					$this->handle_cancelled_payment();
 				}
 			}
 		}
@@ -209,23 +207,13 @@ if ( ! class_exists( 'EDU_SveaWebPay' ) ):
 
 			$eventName = '';
 
-			$locationAddress    = '';
-			$locationCountry    = '';
-			$locationPostalCode = '';
-
 			if ( ! empty( $ebi->EventBooking['BookingId'] ) ) {
 				$booking_id   = intval( $ebi->EventBooking['BookingId'] );
 				$reference_id = $booking_id;
 
-				$_event = EDUAPI()->OData->Events->GetItem( $ebi->EventBooking['EventId'], null, "LocationAddress" );
+				$_event = EDUAPI()->OData->Events->GetItem( $ebi->EventBooking['EventId'], null );
 
 				$eventName = $_event['EventName'];
-
-				if ( ! empty( $_event['LocationAddress'] ) && $_event['LocationAdress'] != null ) {
-					$locationAddress    = $_event['LocationAddress']['Address'];
-					$locationCountry    = $_event['LocationAddress']['Country'];
-					$locationPostalCode = $_event['LocationAddress']['AddressZip'];
-				}
 			}
 
 			if ( ! empty( $ebi->EventBooking['ProgrammeBookingId'] ) ) {
@@ -367,11 +355,16 @@ if ( ! class_exists( 'EDU_SveaWebPay' ) ):
 				EDU()->session['svea-order-id'] = null;
 
 				if ( $deleted ) {
-					@wp_redirect( get_home_url() );
-					echo "<script type='text/javascript>location.href = '" . esc_js( get_home_url() ) . "';</script>";
-					exit( 0 );
+					$this->handle_cancelled_payment();
 				}
 			}
+		}
+
+		private function handle_cancelled_payment() {
+			@wp_redirect( get_home_url() );
+			wp_add_inline_script( 'edu-svea-redirecthome', "location.href = '" . esc_js( get_home_url() ) . "';" );
+			wp_enqueue_script( 'edu-svea-redirecthome', false, array( 'jquery' ) );
+			exit( 0 );
 		}
 
 		/**
