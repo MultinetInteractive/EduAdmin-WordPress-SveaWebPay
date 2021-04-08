@@ -10,7 +10,7 @@ defined( 'ABSPATH' ) or die( 'This plugin must be run within the scope of WordPr
  * GitHub Plugin URI: multinetinteractive/eduadmin-wordpress-sveawebpay
  * GitHub Plugin URI: https://github.com/multinetinteractive/eduadmin-wordpress-sveawebpay
  * Requires at least: 5.0
- * Tested up to: 5.6.2
+ * Tested up to: 5.7
  * Author:	Chris Gårdenberg, MultiNet Interactive AB
  * Author URI:	http://www.multinet.se
  * License:	GPL3
