@@ -10,7 +10,7 @@ if [[ -z "$WP_PASSWORD" ]]; then
 	exit 1
 fi
 
-if [[ -z "$GITHUB_REF" || "$GITHUB_REF" != "refs/heads/master" ]]; then
+if [[ -z "$GITHUB_REF" ]]; then
 	echo "Build branch is required and must be a release-tag" 1>&2
 	exit 0
 fi
