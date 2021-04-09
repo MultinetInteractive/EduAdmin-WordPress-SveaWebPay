@@ -1,11 +1,4 @@
 .idea
 .vscode
-vendor/bin
-vendor/**/.github
-vendor/**/.circleci
-vendor/**/docs/
-vendor/**/test/
-vendor/**/tests/
-vendor/**/example/
-vendor/**/examples/
+vendor
 node_modules

@@ -1,0 +1,5 @@
+{
+    "require": {
+        "sveaekonomi/webpay": "dev-master"
+    }
+}
