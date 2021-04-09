@@ -1,4 +1,4 @@
-=== EduAdmin - SweaWebPay WordPress-plugin ===
+=== EduAdmin - SveaWebPay WordPress-plugin ===
 Contributors: mnchga
 Tags: booking, participants, courses, events, eduadmin, lega online, svea, sveawebpay
 Requires at least: $PLUGINATLEAST$
