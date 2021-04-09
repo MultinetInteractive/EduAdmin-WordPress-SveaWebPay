@@ -2,7 +2,7 @@
 Contributors: mnchga
 Tags: booking, participants, courses, events, eduadmin, lega online, svea, sveawebpay
 Requires at least: 5.0
-Tested up to: 5.6.2
+Tested up to: 5.7
 Stable tag: 2.0.0
 Requires PHP: 5.2
 License: GPL3
