@@ -1,0 +1,27 @@
+name: Run CI to see if it works
+on:
+  push:
+    branches: master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 1
+          submodules: false
+          lfs: false
+      - name: Get composer dependencies
+        uses: php-actions/composer@v5
+        with:
+          - command: require sveaekonomi/webpay dev-master
+      - name: Get Node 10.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 10.x
+      - name: Build source files
+        shell: bash
+        run: |
+          yarn
+          yarn gulp deploy
