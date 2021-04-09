@@ -21,7 +21,7 @@ gulp.task("readme-version", function () {
 
 gulp.task("plugin-version", function () {
     return gulp
-        .src("src/eduadmin.php")
+        .src("src/eduadmin-wordpress-sveawebpay.php")
         .pipe(replace("$PLUGINVERSION$", pinfo.version))
         .pipe(replace("$PLUGINATLEAST$", pinfo.config.eduadmin.requiresAtLeast))
         .pipe(replace("$PLUGINTESTEDTO$", pinfo.config.eduadmin.testedUpTo))
