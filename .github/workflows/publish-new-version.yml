@@ -15,7 +15,7 @@ jobs:
       - name: Get composer dependencies
         uses: php-actions/composer@v5
         with:
-          - command: require sveaekonomi/webpay dev-master
+          command: require sveaekonomi/webpay dev-master
       - name: Get Node 10.x
         uses: actions/setup-node@v1
         with:
