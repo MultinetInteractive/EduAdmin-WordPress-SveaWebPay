@@ -211,6 +211,7 @@
                 "phpunit/phpunit": "^5 || ^6 || ^7"
             },
             "time": "2020-11-11T16:31:19+00:00",
+            "default-branch": true,
             "type": "library",
             "installation-source": "source",
             "autoload": {
@@ -229,6 +230,10 @@
                 }
             ],
             "description": "Php integration library for Svea Ekonomis payment methods",
+            "support": {
+                "issues": "https://github.com/sveawebpay/php-integration/issues",
+                "source": "https://github.com/sveawebpay/php-integration/tree/master"
+            },
             "install-path": "../sveaekonomi/webpay"
         }
     ],

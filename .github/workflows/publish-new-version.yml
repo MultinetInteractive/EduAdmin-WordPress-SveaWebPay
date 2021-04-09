@@ -1,0 +1,30 @@
+name: Deploy new production version (production)
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          fetch-depth: 1
+          submodules: true
+          lfs: true
+      - name: Get Node 10.x
+        uses: actions/setup-node@v1
+        with:
+          node-version: 10.x
+      - name: Build source files
+        shell: bash
+        run: |
+          yarn
+          yarn gulp deploy
+      - name: Deploy trunk to SVN
+        env:
+          WP_USERNAME: ${{ secrets.WP_USERNAME }}
+          WP_PASSWORD: ${{ secrets.WP_PASSWORD }}
+          SLACK_HOOKURL: ${{ secrets.SLACK_HOOKURL }}
+        run: |
+          $GITHUB_WORKSPACE/scripts/github-deploy.sh

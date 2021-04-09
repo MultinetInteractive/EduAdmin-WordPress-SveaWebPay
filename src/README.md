@@ -1,10 +1,10 @@
 === EduAdmin - SweaWebPay WordPress-plugin ===
 Contributors: mnchga
 Tags: booking, participants, courses, events, eduadmin, lega online, svea, sveawebpay
-Requires at least: 5.0
-Tested up to: 5.7
-Stable tag: 2.0.0
-Requires PHP: 5.2
+Requires at least: $PLUGINATLEAST$
+Tested up to: $PLUGINTESTEDTO$
+Stable tag: $PLUGINVERSION$
+Requires PHP: $PLUGINREQUIREDPHP$
 License: GPL3
 License-URI: https://www.gnu.org/licenses/gpl-3.0.en.html
 Plugin to the EduAdmin-Booking plugin to enable Svea WebPay payments

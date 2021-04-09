@@ -8,3 +8,4 @@ vendor/**/test/
 vendor/**/tests/
 vendor/**/example/
 vendor/**/examples/
+node_modules

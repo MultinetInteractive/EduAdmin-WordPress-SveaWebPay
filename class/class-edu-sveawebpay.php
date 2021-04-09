@@ -5,8 +5,6 @@ require_once( __DIR__ . '/class-edu-sveawebpay-config.php' );
 
 use Svea\WebPay\WebPay;
 use Svea\WebPay\WebPayItem;
-use Svea\WebPay\Config\ConfigurationService;
-use Svea\WebPay\Response\SveaResponse;
 
 if ( ! class_exists( 'EDU_SveaWebPay' ) ):
 

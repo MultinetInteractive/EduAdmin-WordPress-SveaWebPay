@@ -6,7 +6,7 @@
     'aliases' => 
     array (
     ),
-    'reference' => 'f95cb927b3e6413f89ca531e630fa47c18a41959',
+    'reference' => '766344ac9e8505922cf9c76dadace7bda6a9c42f',
     'name' => 'multinetinteractive/eduadmin-wordpress-sveawebpay',
   ),
   'versions' => 
@@ -27,7 +27,7 @@
       'aliases' => 
       array (
       ),
-      'reference' => 'f95cb927b3e6413f89ca531e630fa47c18a41959',
+      'reference' => '766344ac9e8505922cf9c76dadace7bda6a9c42f',
     ),
     'roundcube/plugin-installer' => 
     array (
