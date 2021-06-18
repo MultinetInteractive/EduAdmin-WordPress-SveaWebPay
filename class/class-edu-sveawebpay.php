@@ -234,7 +234,7 @@ if ( ! class_exists( 'EDU_SveaWebPay' ) ):
 			$wpOrder = WebPay::checkout( $wpConfig );
 
 			$orderRow = WebPayItem::orderRow();
-			$orderRow->setName( $eventName );
+			$orderRow->setName( substr( $eventName, 0, 40 ) );
 			$orderRow->setQuantity( 1 );
 
 			$vatPercent = ( $ebi->EventBooking['VatSum'] / $ebi->EventBooking['TotalPriceExVat'] ) * 100;
