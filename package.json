@@ -1,6 +1,6 @@
 {
   "name": "eduadmin-sveawebpay",
-  "version": "2.0.2",
+  "version": "2.1.0",
   "description": "EduAdmin plugin to enable payments through Svea WebPay (Checkout)",
   "repository": "https://github.com/MultinetInteractive/EduAdmin-WordPress-SveaWebPay.git",
   "author": "Chris Gårdenberg <chga@multinet.se>",
