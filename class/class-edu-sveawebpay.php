@@ -233,14 +233,6 @@ if ( ! class_exists( 'EDU_SveaWebPay' ) ):
 
 			$wpOrder = WebPay::checkout( $wpConfig );
 
-			$orderRow = WebPayItem::orderRow();
-			$orderRow->setName( substr( $eventName, 0, 40 ) );
-			$orderRow->setQuantity( 1 );
-
-			$vatPercent = ( $ebi->EventBooking['VatSum'] / $ebi->EventBooking['TotalPriceExVat'] ) * 100;
-			$orderRow->setVatPercent( $vatPercent );
-			$orderRow->setAmountIncVat( (float) $ebi->EventBooking['TotalPriceIncVat'] );
-
 			$customer = WebPayItem::companyCustomer();
 
 			$customerName  = ! empty( $ebi->Customer['BillingInfo']['InvoiceName'] ) ? $ebi->Customer['BillingInfo']['InvoiceName'] : $ebi->Customer['CustomerName'];
@@ -320,13 +312,53 @@ if ( ! class_exists( 'EDU_SveaWebPay' ) ):
 				->setCurrency( $currency )
 				->setCountryCode( $selectedCountry )
 				->setClientOrderNumber( $reference_id )
-				->addOrderRow( $orderRow )
 				->setLocale( $selectedLocale )
 				->setTermsUri( $defaultTermsUrl )
 				->setConfirmationUri( $defaultThankYou )
 				->setPushUri( $defaultPushUrl )
 				->setCheckoutUri( $defaultCancel ); // We have no "checkout"-url.. So we just cancel the booking instead.
-			$wpForm  = $wpBuild->createOrder();
+
+			$orderRow = WebPayItem::orderRow();
+			$orderRow->setName( substr( $eventName, 0, 40 ) );
+			$orderRow->setQuantity( 0 );
+			$orderRow->setAmountIncVat( 0 );
+			$orderRow->setVatPercent( 0 );
+
+			$wpBuild->addOrderRow( $orderRow );
+
+			$timeLabel = $programme_booking_id > 0 ? "Programstart" : "Kursstart";
+
+			$orderRow = WebPayItem::orderRow();
+			$orderRow->setName( $timeLabel . ": " . date( "Y-m-d H:i", strtotime( $_event['StartDate'] ) ) );
+			$orderRow->setQuantity( 0 );
+			$orderRow->setAmountIncVat( 0 );
+			$orderRow->setVatPercent( 0 );
+
+			$wpBuild->addOrderRow( $orderRow );
+
+			foreach ( $ebi->EventBooking['OrderRows'] as $eduOrderRow ) {
+				$orderRow = WebPayItem::orderRow();
+				$orderRow->setName( substr( $eduOrderRow['Description'], 0, 40 ) );
+				$orderRow->setQuantity( $eduOrderRow['Quantity'] );
+
+				$orderRow->setVatPercent( $eduOrderRow['VatPercent'] );
+
+				if ( $eduOrderRow['PriceIncVat'] ) {
+					$orderRow->setAmountIncVat( $eduOrderRow['TotalPrice'] );
+				} else {
+					$priceInclVat = $eduOrderRow['TotalPrice'];
+					if ( $eduOrderRow['VatPercent'] > 0 ) {
+						$priceInclVat = $eduOrderRow['TotalPrice'] * ( 1 + ( $eduOrderRow['VatPercent'] / 100 ) );
+					}
+					$orderRow->setAmountIncVat( $priceInclVat );
+				}
+
+				$orderRow->setDiscountPercent( $eduOrderRow['DiscountPercent'] );
+
+				$wpBuild->addOrderRow( $orderRow );
+			}
+
+			$wpForm = $wpBuild->createOrder();
 
 			EDU()->session['svea-order-id'] = $wpForm['OrderId'];
 
