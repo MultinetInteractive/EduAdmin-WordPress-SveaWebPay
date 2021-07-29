@@ -6,11 +6,11 @@ defined( 'ABSPATH' ) or die( 'This plugin must be run within the scope of WordPr
  * Plugin URI:	http://www.eduadmin.se
  * Description:	EduAdmin plugin to allow visitors to book courses at your website
  * Tags:	booking, participants, courses, events, eduadmin, lega online
- * Version:	2.1.0
+ * Version:	2.1.1
  * GitHub Plugin URI: multinetinteractive/eduadmin-wordpress-sveawebpay
  * GitHub Plugin URI: https://github.com/multinetinteractive/eduadmin-wordpress-sveawebpay
  * Requires at least: 5.0
- * Tested up to: 5.7
+ * Tested up to: 5.8
  * Author:	Chris Gårdenberg, MultiNet Interactive AB
  * Author URI:	http://www.multinet.se
  * License:	GPL3
