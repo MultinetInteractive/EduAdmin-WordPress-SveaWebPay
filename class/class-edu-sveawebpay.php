@@ -311,7 +311,7 @@ if ( ! class_exists( 'EDU_SveaWebPay' ) ):
 			$wpBuild = $wpOrder
 				->setCurrency( $currency )
 				->setCountryCode( $selectedCountry )
-				->setClientOrderNumber( 'EDU-' . $reference_id )
+				->setClientOrderNumber( $reference_id )
 				->setLocale( $selectedLocale )
 				->setTermsUri( $defaultTermsUrl )
 				->setConfirmationUri( $defaultThankYou )
