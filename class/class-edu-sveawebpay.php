@@ -238,7 +238,7 @@ if ( ! class_exists( 'EDU_SveaWebPay' ) ):
 			$customerName  = ! empty( $ebi->Customer['BillingInfo']['InvoiceName'] ) ? $ebi->Customer['BillingInfo']['InvoiceName'] : $ebi->Customer['CustomerName'];
 			$streetAddress = ! empty( $ebi->Customer['BillingInfo']['Address'] ) ? $ebi->Customer['BillingInfo']['Address'] : $ebi->Customer['Address'];
 			$zipCode       = ! empty( $ebi->Customer['BillingInfo']['Zip'] ) ? $ebi->Customer['BillingInfo']['Zip'] : $ebi->Customer['Zip'];
-			$city          = $ebi->Customer['BillingInfo']['City'] ? $ebi->Customer['BillingInfo']['City'] : $ebi->Customer['City'];
+			$city          = ! empty ( $ebi->Customer['BillingInfo']['City'] ) ? $ebi->Customer['BillingInfo']['City'] : $ebi->Customer['City'];
 			$phone         = $ebi->Customer['Phone'];
 			$email         = ! empty( $ebi->Customer['BillingInfo']['Email'] ) ? $ebi->Customer['BillingInfo']['Email'] : $ebi->Customer['Email'];
 
@@ -293,6 +293,13 @@ if ( ! class_exists( 'EDU_SveaWebPay' ) ):
 				),
 				$current_url
 			);
+
+			$cancelRedirectUrl = add_query_arg(
+				[],
+				$current_url
+			);
+
+			EDU()->session['svea-cancel-url'] = $cancelRedirectUrl;
 
 			$defaultPushUrl = add_query_arg(
 				array(
@@ -391,8 +398,13 @@ if ( ! class_exists( 'EDU_SveaWebPay' ) ):
 		}
 
 		private function handle_cancelled_payment() {
-			@wp_redirect( get_home_url() );
-			wp_add_inline_script( 'edu-svea-redirecthome', "location.href = '" . esc_js( get_home_url() ) . "';" );
+			$url = EDU()->session['svea-cancel-url'];
+
+			EDU()->session['svea-cancel-url'] = null;
+			EDU()->session['svea-order-id']   = null;
+
+			@wp_redirect( $url );
+			wp_add_inline_script( 'edu-svea-redirecthome', "location.href = '" . esc_js( $url ) . "';" );
 			wp_enqueue_script( 'edu-svea-redirecthome', false, array( 'jquery' ) );
 			exit( 0 );
 		}
