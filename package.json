@@ -12,9 +12,9 @@
   },
   "config": {
     "eduadmin": {
-      "testedUpTo": "5.8",
-      "requiresAtLeast": "5.0",
-      "minimumPhpVersion": "5.2"
+      "testedUpTo": "6.0",
+      "requiresAtLeast": "5.8",
+      "minimumPhpVersion": "7.0"
     }
   },
   "dependencies": {
